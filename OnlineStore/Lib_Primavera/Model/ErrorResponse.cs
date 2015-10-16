@@ -5,9 +5,12 @@ using System.Web;
 
 namespace OnlineStore.Lib_Primavera.Model
 {
-    public class Cliente
+    public class ErrorResponse
     {
-        String id;
-        
+        public int Error
+        { get; set; }
+
+        public string Description
+        { get; set; }
     }
 }

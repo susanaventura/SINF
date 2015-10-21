@@ -1,10 +1,13 @@
-﻿using Interop.ErpBS800;
-using Interop.StdBE800;
-using Interop.StdPlatBS800;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Text;
+using System.Threading.Tasks;
+using Interop.ErpBS800;         // Use Primavera interop's [Path em C:\Program Files\Common Files\PRIMAVERA\SG800]
+using Interop.StdPlatBS800;
+using Interop.StdBE800;
+using ADODB;
+using Interop.IGcpBS800;
 
 namespace OnlineStore.Lib_Primavera
 {
@@ -18,7 +21,7 @@ namespace OnlineStore.Lib_Primavera
         {
 
             StdBSConfApl objAplConf = new StdBSConfApl();
-            StdPlatBS my_platform = new StdPlatBS();
+            StdPlatBS Plataforma = new StdPlatBS();
             ErpBS MotorLE = new ErpBS();
 
             EnumTipoPlataforma objTipoPlataforma = new EnumTipoPlataforma();
@@ -32,14 +35,14 @@ namespace OnlineStore.Lib_Primavera
             StdBETransaccao objStdTransac = new StdBETransaccao();
 
             // Opem platform.
-            my_platform.AbrePlataformaEmpresaIntegrador(ref Company, ref objStdTransac, ref objAplConf, ref objTipoPlataforma);
+            Plataforma.AbrePlataformaEmpresaIntegrador(ref Company, ref objStdTransac, ref objAplConf, ref objTipoPlataforma);
 
             // Is plt initialized?
-            if (my_platform.Inicializada)
+            if (Plataforma.Inicializada)
             {
 
                 // Retuns the ptl.
-                Platform = my_platform;
+                Platform = Plataforma;
 
                 bool blnModoPrimario = true;
 
@@ -48,6 +51,16 @@ namespace OnlineStore.Lib_Primavera
 
                 // Returns the engine.
                 Engine = MotorLE;
+
+
+                //Add fields to user table
+               
+                StdBERegistoUtil objRegistoPontos = new StdBERegistoUtil();
+                StdBECampos cmps = new StdBECampos();
+                StdBECampo cmp1 = new StdBECampo();
+                StdBECampo cmp2 = new StdBECampo();
+                //if (Engine.TabelasUtilizador.Existe("TDU_Pontos"))
+
 
                 return true;
             }
@@ -58,5 +71,7 @@ namespace OnlineStore.Lib_Primavera
 
 
         }
+
     }
+
 }

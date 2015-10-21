@@ -1,4 +1,5 @@
 ﻿using Interop.GcpBE800;
+using Interop.StdBE800;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,11 @@ namespace OnlineStore.Lib_Primavera
 {
     public class PriIntegration
     {
-        /*** Clients ***/
+        
+        //START CLIENT
+        #region Client
 
-        public static Lib_Primavera.Model.Client GetCliente(string codCliente)
+        public static Lib_Primavera.Model.Client GetClient(string codClient)
         {
 
 
@@ -19,17 +22,20 @@ namespace OnlineStore.Lib_Primavera
 
             Model.Client myCli = new Model.Client();
 
-            if (PriEngine.InitializeCompany(OnlineStore.Properties.Settings.Default.Company.Trim(), OnlineStore.Properties.Settings.Default.User.Trim(), OnlineStore.Properties.Settings.Default.Password.Trim()) == true)
+            if (Util.checkCredentials())
             {
 
-                if (PriEngine.Engine.Comercial.Clientes.Existe(codCliente) == true)
+                if (PriEngine.Engine.Comercial.Clientes.Existe(codClient) == true)
                 {
-                    objCli = PriEngine.Engine.Comercial.Clientes.Edita(codCliente);
-                    myCli.id = objCli.get_Cliente();
+                    objCli = PriEngine.Engine.Comercial.Clientes.Edita(codClient);
+                    myCli.codClient = objCli.get_Cliente();
                     myCli.name = objCli.get_Nome();
                     myCli.currency = objCli.get_Moeda();
+                    myCli.email = objCli.get_EnderecoWeb(); //todo
                     myCli.taxpayer_num = objCli.get_NumContribuinte();
+                    myCli.billing_address = objCli.get_Morada();
                     myCli.delivery_address = objCli.get_Morada();
+
                     return myCli;
                 }
                 else
@@ -42,6 +48,51 @@ namespace OnlineStore.Lib_Primavera
         }
 
 
+        public static Lib_Primavera.Model.ErrorResponse CreateClient(Model.Client cli)
+        {
 
+            Lib_Primavera.Model.ErrorResponse error = new Model.ErrorResponse();
+
+
+            GcpBECliente myCli = new GcpBECliente();
+
+            try
+            {
+                if (Util.checkCredentials())
+                {
+
+                    myCli.set_Cliente(cli.codClient);
+                    myCli.set_Nome(cli.name);
+                    myCli.set_NumContribuinte(cli.taxpayer_num);
+                    myCli.set_Moeda(cli.currency);
+                    myCli.set_Morada(cli.delivery_address);
+                    myCli.set_Morada2(cli.billing_address);
+
+                    PriEngine.Engine.Comercial.Clientes.Actualiza(myCli);
+
+                    error.Error = 0;
+                    error.Description = "Success";
+                    return error;
+                }
+                else
+                {
+                    error.Error = 1;
+                    error.Description = "Wrong credentials";
+                    return error;
+                }
+            }
+
+            catch (Exception ex)
+            {
+                error.Error = 1;
+                error.Description = ex.Message;
+                return error;
+            }
+
+
+        }
+
+
+        #endregion Client; //END CLIENT
     }
 }

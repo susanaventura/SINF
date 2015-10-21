@@ -94,5 +94,73 @@ namespace OnlineStore.Lib_Primavera
 
 
         #endregion Client; //END CLIENT
+
+
+        //START PRODUCT
+        #region Product
+
+    
+        public static Lib_Primavera.Model.Product GetProduct(string codProduct)
+        {
+
+            GcpBEArtigo objArtigo = new GcpBEArtigo();
+            Model.Product myProd = new Model.Product();
+
+            if (PriEngine.InitializeCompany(OnlineStore.Properties.Settings.Default.Company.Trim(), OnlineStore.Properties.Settings.Default.User.Trim(), OnlineStore.Properties.Settings.Default.Password.Trim()) == true)
+            {
+                if (PriEngine.Engine.Comercial.Artigos.Existe(codProduct))
+                {
+                    objArtigo = PriEngine.Engine.Comercial.Artigos.Edita(codProduct);
+                    myProd.codProduct = objArtigo.get_Artigo();
+                    myProd.description = objArtigo.get_Descricao();
+                    myProd.main_image = "todo";
+                    myProd.images = new String[] {"todo1", "todo2", "todo3"};
+                    myProd.price = "todo";
+                    myProd.unit = objArtigo.get_UnidadeBase();
+                    myProd.points = 0;
+
+                    return myProd;
+                }
+                else return null;
+            }
+            else return null;
+        }
+
+        public static List<Model.Product> ListProducts(int indexStart = 0, int indexEnd = 0)
+        {
+
+            StdBELista objList;
+            Model.Product myProd;
+            List<Model.Product> listArts = new List<Model.Product>();
+
+            if (PriEngine.InitializeCompany(OnlineStore.Properties.Settings.Default.Company.Trim(), OnlineStore.Properties.Settings.Default.User.Trim(), OnlineStore.Properties.Settings.Default.Password.Trim()))
+            {
+                objList = PriEngine.Engine.Consulta("SELECT artigo, descricao From Artigo");
+
+                // iterate to the correct index
+                for (int i = 0; i < indexStart && !objList.NoFim(); i++) objList.Seguinte();
+
+                // fetch a page of elements
+                for (int i = indexStart; i < indexEnd && !objList.NoFim(); i++)
+                {
+                    myProd = new Model.Product();
+                    myProd.codProduct = objList.Valor("artigo");
+                    myProd.description = objList.Valor("descricao");
+                    myProd.main_image = "todo";
+                    myProd.images = new String[] { "todo1", "todo2", "todo3" };
+                    myProd.price = "todo";
+                    //myProd.unit = objList.Valor("unidade base");
+                    myProd.points = 0;
+
+                    listArts.Add(myProd);
+                    objList.Seguinte();
+                }
+
+                return listArts;
+            }
+            else return null;
+        }
+
+        #endregion Product; //END PRODUCT
     }
 }

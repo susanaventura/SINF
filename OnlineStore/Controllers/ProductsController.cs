@@ -18,8 +18,9 @@ namespace OnlineStore.Controllers
             Lib_Primavera.Model.Product product = Lib_Primavera.PriIntegration.GetProduct(id);
             if (product == null)
             {
-                throw new HttpResponseException(
-                        Request.CreateResponse(HttpStatusCode.NotFound));
+                return null;
+                /* throw new HttpResponseException(
+                        Request.CreateResponse(HttpStatusCode.NotFound));*/
             }
             else { return product; }
         }
@@ -31,9 +32,9 @@ namespace OnlineStore.Controllers
                 [FromUri]string filterNew = "", [FromUri]string filterRecent = "", [FromUri]string filterOnSale = "", [FromUri]string filterPoints = "")
         {
             int indexStart;
-            try { indexStart = (int.Parse(page)-1) * productPageSize; } catch (Exception e) { indexStart = 0; }
+            try { indexStart = (int.Parse(page)-1) * productPageSize; } catch (Exception) { indexStart = 0; }
 
-            return Lib_Primavera.PriIntegration.ListProducts(indexStart, indexStart+productPageSize);
+            return Lib_Primavera.PriIntegration.ListProducts(indexStart, productPageSize);
         }
 
         

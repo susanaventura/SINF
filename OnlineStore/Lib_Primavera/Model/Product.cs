@@ -13,8 +13,8 @@ namespace OnlineStore.Lib_Primavera.Model
         public String[] images { get; set; }
         public String price { get; set; } 
         public String unit { get; set; }
-        public String availability { get; set; }
-        public int points { get; set; }
+        //public String availability { get; set; }
+        //public int points { get; set; }
 
     }
 }

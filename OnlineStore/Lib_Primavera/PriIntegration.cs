@@ -104,6 +104,7 @@ namespace OnlineStore.Lib_Primavera
         {
 
             GcpBEArtigo objArtigo = new GcpBEArtigo();
+            GcpBEB2BAnexo objAnexo = new GcpBEB2BAnexo();
             Model.Product myProd = new Model.Product();
 
             if (PriEngine.InitializeCompany(OnlineStore.Properties.Settings.Default.Company.Trim(), OnlineStore.Properties.Settings.Default.User.Trim(), OnlineStore.Properties.Settings.Default.Password.Trim()) == true)
@@ -117,7 +118,7 @@ namespace OnlineStore.Lib_Primavera
                     myProd.images = new String[] {"todo1", "todo2", "todo3"};
                     myProd.price = "todo";
                     myProd.unit = objArtigo.get_UnidadeBase();
-                    myProd.points = 0;
+                    //myProd.points = 0;
 
                     return myProd;
                 }
@@ -126,7 +127,7 @@ namespace OnlineStore.Lib_Primavera
             else return null;
         }
 
-        public static List<Model.Product> ListProducts(int indexStart = 0, int indexEnd = 0)
+        public static List<Model.Product> ListProducts(int offset = 0, int limit = 1)
         {
 
             StdBELista objList;
@@ -135,22 +136,24 @@ namespace OnlineStore.Lib_Primavera
 
             if (PriEngine.InitializeCompany(OnlineStore.Properties.Settings.Default.Company.Trim(), OnlineStore.Properties.Settings.Default.User.Trim(), OnlineStore.Properties.Settings.Default.Password.Trim()))
             {
-                objList = PriEngine.Engine.Consulta("SELECT artigo, descricao From Artigo");
+                objList = PriEngine.Engine.Consulta("SELECT Artigo.Artigo, Artigo.Descricao, ArtigoMoeda.PVP1, Anexos.Id From Artigo "+
+                    "JOIN ArtigoMoeda ON Artigo.Artigo = ArtigoMoeda.Artigo " +
+                    "LEFT JOIN Anexos ON Artigo.Artigo = Anexos.Chave AND Anexos.Tabela=4 AND Anexos.Tipo='IPR'"
+                    );
 
                 // iterate to the correct index
-                for (int i = 0; i < indexStart && !objList.NoFim(); i++) objList.Seguinte();
+                for (int i = 0; i < offset && !objList.NoFim(); i++) objList.Seguinte();
 
                 // fetch a page of elements
-                for (int i = indexStart; i < indexEnd && !objList.NoFim(); i++)
+                for (int i = 0; i < limit && !objList.NoFim(); i++)
                 {
                     myProd = new Model.Product();
-                    myProd.codProduct = objList.Valor("artigo");
-                    myProd.description = objList.Valor("descricao");
-                    myProd.main_image = "todo";
-                    myProd.images = new String[] { "todo1", "todo2", "todo3" };
-                    myProd.price = "todo";
-                    //myProd.unit = objList.Valor("unidade base");
-                    myProd.points = 0;
+                    myProd.codProduct = objList.Valor("Artigo");
+                    myProd.description = objList.Valor("Descricao");
+                    myProd.main_image = objList.Valor("Id");
+                    myProd.images = new String[] { myProd.main_image };
+                    myProd.price = ((double)objList.Valor("pvp1")).ToString();
+                    //myProd.points = 0;
 
                     listArts.Add(myProd);
                     objList.Seguinte();

@@ -53,13 +53,7 @@ namespace OnlineStore.Lib_Primavera
                 Engine = MotorLE;
 
 
-                //Add fields to user table
-               
-                StdBERegistoUtil objRegistoPontos = new StdBERegistoUtil();
-                StdBECampos cmps = new StdBECampos();
-                StdBECampo cmp1 = new StdBECampo();
-                StdBECampo cmp2 = new StdBECampo();
-                //if (Engine.TabelasUtilizador.Existe("TDU_Pontos"))
+
 
 
                 return true;

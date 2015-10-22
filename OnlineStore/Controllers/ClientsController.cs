@@ -25,7 +25,7 @@ namespace OnlineStore.Controllers
         }
 
 
-
+        
         public HttpResponseMessage Post(Lib_Primavera.Model.Client client)
         {
             Lib_Primavera.Model.ErrorResponse erro = new Lib_Primavera.Model.ErrorResponse();

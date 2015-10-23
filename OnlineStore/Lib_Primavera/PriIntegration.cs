@@ -214,62 +214,44 @@ namespace OnlineStore.Lib_Primavera
         public static Lib_Primavera.Model.Product GetProduct(string codProduct)
         {
 
-            GcpBEArtigo objArtigo = new GcpBEArtigo();
-            GcpBEB2BAnexo objAnexo = new GcpBEB2BAnexo();
-            Model.Product myProd = new Model.Product();
-
+            
             if (PriEngine.InitializeCompany(OnlineStore.Properties.Settings.Default.Company.Trim(), OnlineStore.Properties.Settings.Default.User.Trim(), OnlineStore.Properties.Settings.Default.Password.Trim()) == true)
             {
                 if (PriEngine.Engine.Comercial.Artigos.Existe(codProduct))
                 {
-                    objArtigo = PriEngine.Engine.Comercial.Artigos.Edita(codProduct);
-                    myProd.codProduct = objArtigo.get_Artigo();
-                    myProd.description = objArtigo.get_Descricao();
-                    myProd.main_image = "todo";
-                    myProd.images = new String[] {"todo1", "todo2", "todo3"};
-                    myProd.price = "todo";
-                    myProd.unit = objArtigo.get_UnidadeBase();
-                    //myProd.points = 0;
-
-                    return myProd;
+                    String sql = Model.Product.GetQuery(0, 1, false, codProduct);
+                    System.Diagnostics.Debug.WriteLine(sql);
+                    System.Diagnostics.Debug.WriteLine("");
+                    System.Diagnostics.Debug.WriteLine("");
+                    System.Diagnostics.Debug.WriteLine("");
+                    System.Diagnostics.Debug.WriteLine("");
+                    StdBELista objArtigo = PriEngine.Engine.Consulta(
+                    /*    "SELECT Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, ArtigoMoeda.PVP1, ArtigoMoeda.Moeda, Anexos.Id From Artigo " +
+                    "JOIN ArtigoMoeda ON Artigo.Artigo = ArtigoMoeda.Artigo " +
+                    "LEFT JOIN Anexos ON Artigo.Artigo = Anexos.Chave AND Anexos.Tabela=4 AND Anexos.Tipo='IPR'"+
+                    "WHERE Artigo.Artigo='"+codProduct+"'" */
+                    sql
+                    );
+                    return new Model.Product(objArtigo, true);
                 }
                 else return null;
             }
             else return null;
         }
 
-        public static List<Model.Product> ListProducts(int offset = 0, int limit = 1)
+        public static List<Model.Product> ListProducts(int offset = 0, int limit = 1, string codCategory = "", string codStore = "", bool filterOnSale = false, bool filterPoints = false)
         {
 
             StdBELista objList;
-            Model.Product myProd;
             List<Model.Product> listArts = new List<Model.Product>();
 
             if (PriEngine.InitializeCompany(OnlineStore.Properties.Settings.Default.Company.Trim(), OnlineStore.Properties.Settings.Default.User.Trim(), OnlineStore.Properties.Settings.Default.Password.Trim()))
             {
-                objList = PriEngine.Engine.Consulta("SELECT Artigo.Artigo, Artigo.Descricao, ArtigoMoeda.PVP1, Anexos.Id From Artigo "+
-                    "JOIN ArtigoMoeda ON Artigo.Artigo = ArtigoMoeda.Artigo " +
-                    "LEFT JOIN Anexos ON Artigo.Artigo = Anexos.Chave AND Anexos.Tabela=4 AND Anexos.Tipo='IPR'"
-                    );
+                objList = PriEngine.Engine.Consulta(Model.Product.GetQuery(offset, limit, true, "", codCategory, codStore));
 
-                // iterate to the correct index
-                for (int i = 0; i < offset && !objList.NoFim(); i++) objList.Seguinte();
-
-                // fetch a page of elements
-                for (int i = 0; i < limit && !objList.NoFim(); i++)
-                {
-                    myProd = new Model.Product();
-                    myProd.codProduct = objList.Valor("Artigo");
-                    myProd.description = objList.Valor("Descricao");
-                    myProd.main_image = objList.Valor("Id");
-                    myProd.images = new String[] { myProd.main_image };
-                    myProd.price = ((double)objList.Valor("pvp1")).ToString();
-                    //myProd.points = 0;
-
-                    listArts.Add(myProd);
-                    objList.Seguinte();
-                }
-
+                for (; !objList.NoFim(); objList.Seguinte())
+                    listArts.Add(new Model.Product(objList, false));
+               
                 return listArts;
             }
             else return null;

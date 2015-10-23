@@ -276,5 +276,13 @@ namespace OnlineStore.Lib_Primavera
         }
 
         #endregion Product; //END PRODUCT
+
+        //START STORE
+        #region Store
+
+        public static Lib_Primavera.Model.Store getStore(string codStore)
+        {
+            GcpBEArmazem store;
+        }
     }
 }

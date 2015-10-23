@@ -47,11 +47,13 @@ namespace OnlineStore.Lib_Primavera
             }
         }
 
+        //Creates a new client
         public static Lib_Primavera.Model.ErrorResponse CreateClient(Model.Client cli)
         {
-
+            
             Lib_Primavera.Model.ErrorResponse error = new Model.ErrorResponse();
 
+            String s = "Hello World"
 
             GcpBECliente myCli = new GcpBECliente();
 

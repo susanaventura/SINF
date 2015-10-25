@@ -29,10 +29,9 @@ namespace OnlineStore.Lib_Primavera
                     myCli.CodClient = objCli.get_Cliente();
                     myCli.Name = objCli.get_Nome();
                     myCli.Currency = objCli.get_Moeda();
-                    myCli.Email = objCli.get_B2BEnderecoMail(); //todo
+                    myCli.Email = objCli.get_B2BEnderecoMail();
                     myCli.Taxpayer_num = objCli.get_NumContribuinte();
-                    myCli.Billing_address = objCli.get_Morada();
-                    myCli.Delivery_address = objCli.get_Morada();
+                    myCli.Address = objCli.get_Morada();
 
                     return myCli;
                 }
@@ -50,45 +49,16 @@ namespace OnlineStore.Lib_Primavera
         public static Lib_Primavera.Model.ErrorResponse CreateClient(Model.Client cli)
         {
 
-            Lib_Primavera.Model.ErrorResponse error = new Model.ErrorResponse();
-
-
-            GcpBECliente myCli = new GcpBECliente();
-
             try
             {
-                if (Util.checkCredentials())
-                {
-
-                    myCli.set_Cliente(cli.CodClient);
-                    myCli.set_Nome(cli.Name);
-                    myCli.set_NumContribuinte(cli.Taxpayer_num);
-                    myCli.set_Moeda(cli.Currency);
-                    myCli.set_Morada(cli.Delivery_address);
-                    myCli.set_Morada2(cli.Billing_address);
-                    myCli.set_B2BEnderecoMail(cli.Email);
-
-                    PriEngine.Engine.Comercial.Clientes.Actualiza(myCli);
-
-                    error.Error = 0;
-                    error.Description = "Success";
-                    return error;
-                }
-                else
-                {
-                    error.Error = 1;
-                    error.Description = "Wrong credentials";
-                    return error;
-                }
+                if (!Util.checkCredentials()) return Util.ErrorWrongCredentials();
+                return Util.setClientValues(new GcpBECliente(), cli, true);
             }
 
             catch (Exception ex)
             {
-                error.Error = 1;
-                error.Description = ex.Message;
-                return error;
+                return Util.ErrorException(ex);
             }
-
 
         }
 
@@ -96,59 +66,29 @@ namespace OnlineStore.Lib_Primavera
 
         public static Lib_Primavera.Model.ErrorResponse UpdCliente(Lib_Primavera.Model.Client client)
         {
-            Lib_Primavera.Model.ErrorResponse erro = new Model.ErrorResponse();
-
-
+            
             GcpBECliente objCli = new GcpBECliente();
 
             try
             {
 
-                if (Util.checkCredentials())
-                {
+                if (!Util.checkCredentials()) return Util.ErrorWrongCredentials();
 
-                    if (PriEngine.Engine.Comercial.Clientes.Existe(client.CodClient) == false)
-                    {
-                        erro.Error = 1;
-                        erro.Description = "The client does not exist";
-                        return erro;
-                    }
-                    else
-                    {
+                if (!PriEngine.Engine.Comercial.Clientes.Existe(client.CodClient)) return Util.ErrorClientNotFound();
+                    
 
-                        objCli = PriEngine.Engine.Comercial.Clientes.Edita(client.CodClient);
-                        objCli.set_EmModoEdicao(true);
-
-                        objCli.set_Nome(client.Name);
-                        objCli.set_NumContribuinte(client.Taxpayer_num);
-                        objCli.set_Moeda(client.Currency);
-                        objCli.set_Morada(client.Delivery_address);
-                        objCli.set_Morada2(client.Billing_address); //TODO onde colocar??
-                        objCli.set_B2BEnderecoMail(client.Email);
-
-
-                        PriEngine.Engine.Comercial.Clientes.Actualiza(objCli);
-
-                        erro.Error = 0;
-                        erro.Description = "Sucess";
-                        return erro;
-                    }
-                }
-                else
-                {
-                    erro.Error = 1;
-                    erro.Description = "Wrong credentials";
-                    return erro;
-
-                }
+                objCli = PriEngine.Engine.Comercial.Clientes.Edita(client.CodClient);
+                    
+                objCli.set_EmModoEdicao(true);
+                        
+                return Util.setClientValues(objCli, client, true);
+                    
 
             }
 
             catch (Exception ex)
             {
-                erro.Error = 1;
-                erro.Description = ex.Message;
-                return erro;
+                return Util.ErrorException(ex);
             }
 
         }
@@ -157,44 +97,25 @@ namespace OnlineStore.Lib_Primavera
         public static Lib_Primavera.Model.ErrorResponse DelCliente(string codCliente)
         {
 
-            Lib_Primavera.Model.ErrorResponse error = new Model.ErrorResponse();
-            GcpBECliente objCli = new GcpBECliente();
-
-
             try
             {
+                if(!Util.checkCredentials()) return Util.ErrorWrongCredentials();
 
-                if (Util.checkCredentials())
-                {
-                    if (!PriEngine.Engine.Comercial.Clientes.Existe(codCliente))
-                    {
-                        error.Error = 1;
-                        error.Description = "The client does not exist";
-                        return error;
-                    }
-                    else
-                    {
 
-                        PriEngine.Engine.Comercial.Clientes.Remove(codCliente);
-                        error.Error = 0;
-                        error.Description = "Client deleted";
-                        return error;
-                    }
-                }
+                if (!PriEngine.Engine.Comercial.Clientes.Existe(codCliente)) return Util.ErrorClientNotFound();
 
-                else
-                {
-                    error.Error = 1;
-                    error.Description = "Wrong credentials";
-                    return error;
-                }
+                PriEngine.Engine.Comercial.Clientes.Remove(codCliente);
+
+                Lib_Primavera.Model.ErrorResponse error = new Model.ErrorResponse();
+                error.Error = 0;
+                error.Description = "Client deleted";
+                return error;
+             
             }
 
             catch (Exception ex)
             {
-                error.Error = 1;
-                error.Description = ex.Message;
-                return error;
+                return Util.ErrorException(ex);
             }
 
         }
@@ -205,6 +126,8 @@ namespace OnlineStore.Lib_Primavera
 
 
         #endregion Client; //END CLIENT
+
+
 
 
         //START PRODUCT
@@ -218,7 +141,7 @@ namespace OnlineStore.Lib_Primavera
             GcpBEB2BAnexo objAnexo = new GcpBEB2BAnexo();
             Model.Product myProd = new Model.Product();
 
-            if (PriEngine.InitializeCompany(OnlineStore.Properties.Settings.Default.Company.Trim(), OnlineStore.Properties.Settings.Default.User.Trim(), OnlineStore.Properties.Settings.Default.Password.Trim()) == true)
+            if (Util.checkCredentials())
             {
                 if (PriEngine.Engine.Comercial.Artigos.Existe(codProduct))
                 {
@@ -245,7 +168,7 @@ namespace OnlineStore.Lib_Primavera
             Model.Product myProd;
             List<Model.Product> listArts = new List<Model.Product>();
 
-            if (PriEngine.InitializeCompany(OnlineStore.Properties.Settings.Default.Company.Trim(), OnlineStore.Properties.Settings.Default.User.Trim(), OnlineStore.Properties.Settings.Default.Password.Trim()))
+            if (Util.checkCredentials())
             {
                 objList = PriEngine.Engine.Consulta("SELECT Artigo.Artigo, Artigo.Descricao, ArtigoMoeda.PVP1, Anexos.Id From Artigo "+
                     "JOIN ArtigoMoeda ON Artigo.Artigo = ArtigoMoeda.Artigo " +

@@ -28,13 +28,13 @@ namespace OnlineStore.Controllers
         // GET api/products
         public const int productPageSize = 50;
 
-        public IEnumerable<Lib_Primavera.Model.Product> Get([FromUri]string page = "", [FromUri]string codStore = "", [FromUri]string codCategory = "",
-                [FromUri]string filterNew = "", [FromUri]string filterRecent = "", [FromUri]string filterOnSale = "", [FromUri]string filterPoints = "")
+        public IEnumerable<Lib_Primavera.Model.Product> Get([FromUri]string page = "1", [FromUri]string codStore = "", [FromUri]string codCategory = "",
+                [FromUri]string filterOnSale = "", [FromUri]string filterPoints = "")
         {
             int indexStart;
             try { indexStart = (int.Parse(page)-1) * productPageSize; } catch (Exception) { indexStart = 0; }
 
-            return Lib_Primavera.PriIntegration.ListProducts(indexStart, productPageSize);
+            return Lib_Primavera.PriIntegration.ListProducts(indexStart, productPageSize, codCategory, codStore, !filterOnSale.Equals(""), !filterPoints.Equals(""));
         }
 
         

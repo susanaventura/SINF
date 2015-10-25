@@ -8,43 +8,43 @@ namespace OnlineStore.Lib_Primavera.Model
 {
     public class Product
     {
-        public String codProduct { get; set; }
-        public String description { get; set; }
-        public String main_image { get; set; }
-        public String[] images { get; set; }
-        public String price { get; set; }
-        public String currency { get; set; }
-        public String unit { get; set; }
-        public String category { get; set; }
-        //public String availability { get; set; }
-        //public int points { get; set; }
+        public String CodProduct { get; set; }
+        public String Description { get; set; }
+        public String Main_image { get; set; }
+        public String[] Images { get; set; }
+        public String Price { get; set; }
+        public String Currency { get; set; }
+        public String Unit { get; set; }
+        public String Category { get; set; }
+        //public String Availability { get; set; }
+        //public int Points { get; set; }
 
         public Product() { }
         public Product(StdBELista objArtigo, bool fetchImages)
         {
-            this.codProduct = objArtigo.Valor("Artigo");
-            this.description = objArtigo.Valor("Descricao");
+            this.CodProduct = objArtigo.Valor("Artigo");
+            this.Description = objArtigo.Valor("Descricao");
 
             if (fetchImages) {
                 // Main Image
-                StdBELista objAnexo = PriEngine.Engine.Consulta("Select top 1 Id From Anexos Where Anexos.chave='" + codProduct + "' AND Anexos.Tabela=4 AND Anexos.Tipo='IPR'");
-                if (!objAnexo.Vazia()) this.main_image = objAnexo.Valor("Id"); else this.main_image = "null";
+                StdBELista objAnexo = PriEngine.Engine.Consulta("Select top 1 Id From Anexos Where Anexos.chave='" + CodProduct + "' AND Anexos.Tabela=4 AND Anexos.Tipo='IPR'");
+                if (!objAnexo.Vazia()) this.Main_image = objAnexo.Valor("Id"); else this.Main_image = "null";
 
                 // Aux images
-                objAnexo = PriEngine.Engine.Consulta("Select Id From Anexos Where Anexos.chave='" + codProduct + "' AND Anexos.Tabela=4 AND Anexos.Tipo='IMG'");
-                this.images = new String[objAnexo.NumLinhas()];
-                for (int i = 0; !objAnexo.NoFim(); objAnexo.Seguinte()) this.images[i++] = objAnexo.Valor("Id");
+                objAnexo = PriEngine.Engine.Consulta("Select Id From Anexos Where Anexos.chave='" + CodProduct + "' AND Anexos.Tabela=4 AND Anexos.Tipo='IMG'");
+                this.Images = new String[objAnexo.NumLinhas()];
+                for (int i = 0; !objAnexo.NoFim(); objAnexo.Seguinte()) this.Images[i++] = objAnexo.Valor("Id");
             }
             else
             {
-                this.main_image = objArtigo.Valor("Id");
-                this.images = new String[] {};
+                this.Main_image = objArtigo.Valor("Id");
+                this.Images = new String[] {};
             }
 
-            this.price = ((double)objArtigo.Valor("PVP1")).ToString();
-            this.currency = objArtigo.Valor("Moeda");
-            this.unit = objArtigo.Valor("UnidadeBase");
-            this.category = objArtigo.Valor("Familia");
+            this.Price = ((double)objArtigo.Valor("PVP1")).ToString();
+            this.Currency = objArtigo.Valor("Moeda");
+            this.Unit = objArtigo.Valor("UnidadeBase");
+            this.Category = objArtigo.Valor("Familia");
             //myProd.points = 0;
 
         }

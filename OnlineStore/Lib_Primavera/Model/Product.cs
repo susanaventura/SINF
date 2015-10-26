@@ -10,50 +10,32 @@ namespace OnlineStore.Lib_Primavera.Model
     {
         public String CodProduct { get; set; }
         public String Description { get; set; }
-        public String Main_image { get; set; }
-        public String[] Images { get; set; }
-        public String Price { get; set; }
+        public double Price { get; set; }
         public String Currency { get; set; }
         public String Unit { get; set; }
         public String Category { get; set; }
-        //public String Availability { get; set; }
-        //public int Points { get; set; }
+        public float Discount { get; set; }
+        public double Points { get; set; }
 
         public Product() { }
-        public Product(StdBELista objArtigo, bool fetchImages)
+        public Product(StdBELista objArtigo)
         {
             this.CodProduct = objArtigo.Valor("Artigo");
             this.Description = objArtigo.Valor("Descricao");
 
-            if (fetchImages) {
-                // Main Image
-                StdBELista objAnexo = PriEngine.Engine.Consulta("Select top 1 Id From Anexos Where Anexos.chave='" + CodProduct + "' AND Anexos.Tabela=4 AND Anexos.Tipo='IPR'");
-                if (!objAnexo.Vazia()) this.Main_image = objAnexo.Valor("Id"); else this.Main_image = "null";
-
-                // Aux images
-                objAnexo = PriEngine.Engine.Consulta("Select Id From Anexos Where Anexos.chave='" + CodProduct + "' AND Anexos.Tabela=4 AND Anexos.Tipo='IMG'");
-                this.Images = new String[objAnexo.NumLinhas()];
-                for (int i = 0; !objAnexo.NoFim(); objAnexo.Seguinte()) this.Images[i++] = objAnexo.Valor("Id");
-            }
-            else
-            {
-                this.Main_image = objArtigo.Valor("Id");
-                this.Images = new String[] {};
-            }
-
-            this.Price = ((double)objArtigo.Valor("PVP1")).ToString();
+            this.Price = objArtigo.Valor("PVP1");
+            this.Points = objArtigo.Valor("PVP6"); if (this.Points <= 0) this.Points = -1;
+            this.Discount = objArtigo.Valor("Desconto");
             this.Currency = objArtigo.Valor("Moeda");
             this.Unit = objArtigo.Valor("UnidadeBase");
             this.Category = objArtigo.Valor("Familia");
-            //myProd.points = 0;
 
         }
 
-        public static String GetQuery(int offset=0, int limit=1, bool getImage=false, string codProduct="", string codCategory="", string codStore="") {
+        public static String GetQuery(int offset=0, int limit=1, string codProduct="", string codCategory="", string codStore="", bool filterOnSale=false, bool filterPoints=false) {
             String query = "";
-            String cols = "Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, Artigo.Familia, ArtigoMoeda.PVP1, ArtigoMoeda.Moeda";
-            String outcols = "Artigo, Descricao, UnidadeBase, Familia, PVP1, Moeda";
-            if (getImage) { cols += ", Anexos.Id"; outcols += ", Id"; }
+            String cols = "Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, Artigo.Familia, Artigo.Desconto, ArtigoMoeda.PVP1, ArtigoMoeda.PVP6, ArtigoMoeda.Moeda";
+            String outcols = "Artigo, Descricao, UnidadeBase, Familia, Desconto, PVP1, PVP6, Moeda";
           
 
             query = "SELECT " + outcols + " FROM (";
@@ -64,20 +46,19 @@ namespace OnlineStore.Lib_Primavera.Model
                 // Join Tables
                 query += "FROM Artigo ";
                 query += "JOIN ArtigoMoeda ON Artigo.Artigo = ArtigoMoeda.Artigo ";
-                if (getImage) query += "LEFT JOIN Anexos ON Artigo.Artigo = Anexos.Chave AND Anexos.Tabela=4 AND Anexos.Tipo='IPR' ";
 
                 // Conditions
                 query += "WHERE (1=1) ";
                 if (codProduct != "") query += "AND Artigo.Artigo='" + codProduct + "' ";
                 if (codCategory != "") query += "AND Artigo.Familia='" + codCategory + "' ";
                 if (codStore != "") query += "AND Artigo.Artigo IN (SELECT Artigo FROM ArtigoArmazem WHERE Armazem='" + codStore + "') ";
+                if (filterPoints) query += "AND ArtigoMoeda.PVP6 > 0 ";
+                if (filterOnSale) query += "AND Artigo.Desconto > 0 ";
 
             
            query += ") AS MyDerivedTable WHERE MyDerivedTable.RowNum BETWEEN " + (offset+1) + " AND " + (offset+limit);
                 
-
-            return query;
-        
+           return query;        
         }
     }
 }

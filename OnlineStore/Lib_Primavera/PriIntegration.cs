@@ -128,8 +128,6 @@ namespace OnlineStore.Lib_Primavera
         #endregion Client; //END CLIENT
 
 
-
-
         //START PRODUCT
         #region Product
 
@@ -145,9 +143,9 @@ namespace OnlineStore.Lib_Primavera
                     
                     StdBELista objArtigo = PriEngine.Engine.Consulta(
                    
-                    Model.Product.GetQuery(0, 1, false, codProduct)
+                    Model.Product.GetQuery(0, 1, codProduct)
                     );
-                    return new Model.Product(objArtigo, true);
+                    return new Model.Product(objArtigo);
                 }
                 else return null;
             }
@@ -162,10 +160,10 @@ namespace OnlineStore.Lib_Primavera
 
             if (Util.checkCredentials())
             {
-                objList = PriEngine.Engine.Consulta(Model.Product.GetQuery(offset, limit, true, "", codCategory, codStore));
+                objList = PriEngine.Engine.Consulta(Model.Product.GetQuery(offset, limit, "", codCategory, codStore, filterOnSale, filterPoints));
 
                 for (; !objList.NoFim(); objList.Seguinte())
-                    listArts.Add(new Model.Product(objList, false));
+                    listArts.Add(new Model.Product(objList));
 
                 return listArts;
             }
@@ -176,11 +174,10 @@ namespace OnlineStore.Lib_Primavera
     
     
         //START ORDER
-    #region Order;
+        #region Order;
 
         public static List<Model.Order> ListOrders()
         {
-
             StdBELista objListCab;
             StdBELista objListLin;
             Model.Order order = new Model.Order();
@@ -226,16 +223,6 @@ namespace OnlineStore.Lib_Primavera
                     orderLine.ValorIEC = objListLin.Valor("ValorIEC");
                     orderLine.TotalIEC = objListLin.Valor("TotalIEC");
                     orderLine.Total = objListLin.Valor("PrecoLiquido");
-                    
-
-                    StdBELista listOfProducts = PriEngine.Engine.Consulta(Model.Product.GetQuery(0,1,true, orderLine.CodProduct));
-                    if (listOfProducts.NumLinhas() > 1) return null; //todo found more that one product
-
-                     for (; !listOfProducts.NoFim(); listOfProducts.Seguinte())
-                     {
-                         Model.Product p = new Model.Product(listOfProducts, true);
-                         orderLine.Main_image = p.Main_image;
-                     }
 
                      orderLine_list.Add(orderLine);
                     objListLin.Seguinte();
@@ -248,7 +235,6 @@ namespace OnlineStore.Lib_Primavera
             }
             return listOrders;
         }
-
 
 
         public static Model.ErrorResponse NewOrder(Model.Order order)
@@ -273,6 +259,8 @@ namespace OnlineStore.Lib_Primavera
                     myEnc.set_Tipodoc("ECL");
                     myEnc.set_TipoEntidade("C");
                     myEnc.set_DataDoc(order.Date);
+                    myEnc.set_Morada(order.DeliveryAddress);
+                    myEnc.set_MoradaFac(order.BillingAddress);
 
                     // Linhas do documento para a lista de linhas
                     lstlindv = order.Items;
@@ -306,10 +294,6 @@ namespace OnlineStore.Lib_Primavera
         }
 
         #endregion Order
+    
     }
-
-
-
-
-
 }

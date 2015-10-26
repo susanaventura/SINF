@@ -162,5 +162,36 @@ namespace OnlineStore.Lib_Primavera
         }
 
         #endregion Product; //END PRODUCT
+
+        #region Categories
+
+        public static List<Model.Category> Categories_List()
+        {
+            StdBELista objList;
+            List<Model.Category> categories = new List<Model.Category>();
+
+            if (PriEngine.InitializeCompany(OnlineStore.Properties.Settings.Default.Company.Trim(), OnlineStore.Properties.Settings.Default.User.Trim(), OnlineStore.Properties.Settings.Default.Password.Trim()))
+            {
+                objList = PriEngine.Engine.Consulta("SELECT Descricao FROM familias");
+                while (!objList.NoFim())
+                {
+                    Model.Category newCat = new Model.Category();
+
+                    newCat.name = objList.Valor("Descricao");
+
+                    categories.Add(newCat);
+
+                    objList.Seguinte();
+
+                }
+                return categories;
+            }
+            else
+                return null;
+
+        }
+
+
+        #endregion Categories
     }
 }

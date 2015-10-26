@@ -9,7 +9,7 @@ namespace OnlineStore.Lib_Primavera
 {
     public class PriIntegration
     {
-        
+
         //START CLIENT
         #region Client
 
@@ -39,8 +39,8 @@ namespace OnlineStore.Lib_Primavera
                 {
                     return null;
                 }
-            } 
-                else
+            }
+            else
             {
                 return null;
             }
@@ -66,7 +66,7 @@ namespace OnlineStore.Lib_Primavera
 
         public static Lib_Primavera.Model.ErrorResponse UpdCliente(Lib_Primavera.Model.Client client)
         {
-            
+
             GcpBECliente objCli = new GcpBECliente();
 
             try
@@ -75,14 +75,14 @@ namespace OnlineStore.Lib_Primavera
                 if (!Util.checkCredentials()) return Util.ErrorWrongCredentials();
 
                 if (!PriEngine.Engine.Comercial.Clientes.Existe(client.CodClient)) return Util.ErrorClientNotFound();
-                    
+
 
                 objCli = PriEngine.Engine.Comercial.Clientes.Edita(client.CodClient);
-                    
+
                 objCli.set_EmModoEdicao(true);
-                        
+
                 return Util.setClientValues(objCli, client, true);
-                    
+
 
             }
 
@@ -99,7 +99,7 @@ namespace OnlineStore.Lib_Primavera
 
             try
             {
-                if(!Util.checkCredentials()) return Util.ErrorWrongCredentials();
+                if (!Util.checkCredentials()) return Util.ErrorWrongCredentials();
 
 
                 if (!PriEngine.Engine.Comercial.Clientes.Existe(codCliente)) return Util.ErrorClientNotFound();
@@ -110,7 +110,7 @@ namespace OnlineStore.Lib_Primavera
                 error.Error = 0;
                 error.Description = "Client deleted";
                 return error;
-             
+
             }
 
             catch (Exception ex)
@@ -133,11 +133,11 @@ namespace OnlineStore.Lib_Primavera
         //START PRODUCT
         #region Product
 
-    
+
         public static Lib_Primavera.Model.Product GetProduct(string codProduct)
         {
 
-            
+
             if (Util.checkCredentials())
             {
                 if (PriEngine.Engine.Comercial.Artigos.Existe(codProduct))
@@ -149,10 +149,10 @@ namespace OnlineStore.Lib_Primavera
                     System.Diagnostics.Debug.WriteLine("");
                     System.Diagnostics.Debug.WriteLine("");
                     StdBELista objArtigo = PriEngine.Engine.Consulta(
-                    /*    "SELECT Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, ArtigoMoeda.PVP1, ArtigoMoeda.Moeda, Anexos.Id From Artigo " +
-                    "JOIN ArtigoMoeda ON Artigo.Artigo = ArtigoMoeda.Artigo " +
-                    "LEFT JOIN Anexos ON Artigo.Artigo = Anexos.Chave AND Anexos.Tabela=4 AND Anexos.Tipo='IPR'"+
-                    "WHERE Artigo.Artigo='"+codProduct+"'" */
+                        /*    "SELECT Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, ArtigoMoeda.PVP1, ArtigoMoeda.Moeda, Anexos.Id From Artigo " +
+                        "JOIN ArtigoMoeda ON Artigo.Artigo = ArtigoMoeda.Artigo " +
+                        "LEFT JOIN Anexos ON Artigo.Artigo = Anexos.Chave AND Anexos.Tabela=4 AND Anexos.Tipo='IPR'"+
+                        "WHERE Artigo.Artigo='"+codProduct+"'" */
                     sql
                     );
                     return new Model.Product(objArtigo, true);
@@ -174,12 +174,71 @@ namespace OnlineStore.Lib_Primavera
 
                 for (; !objList.NoFim(); objList.Seguinte())
                     listArts.Add(new Model.Product(objList, false));
-               
+
                 return listArts;
             }
             else return null;
         }
 
         #endregion Product; //END PRODUCT
+
+        //START ORDER
+        #region Order
+
+        public static Model.ErrorResponse NewOrder(Model.Order order)
+        {
+            GcpBEDocumentoVenda myEnc = new GcpBEDocumentoVenda();
+
+            GcpBELinhaDocumentoVenda myLin = new GcpBELinhaDocumentoVenda();
+
+            GcpBELinhasDocumentoVenda myLinhas = new GcpBELinhasDocumentoVenda();
+
+            PreencheRelacaoVendas rl = new PreencheRelacaoVendas();
+            List<Model.OrderLine> lstlindv = new List<Model.OrderLine>();
+
+
+            if (Util.checkCredentials())
+            {
+                try
+                {
+                    // Atribui valores ao cabecalho do doc
+                    //myEnc.set_DataDoc(dv.Data);
+                    myEnc.set_Entidade(order.CodClient);
+                    myEnc.set_Serie("A");
+                    myEnc.set_Tipodoc("ECL");
+                    myEnc.set_TipoEntidade("C");
+                    myEnc.set_DataDoc(order.Date);
+                    // Linhas do documento para a lista de linhas
+                    lstlindv = order.Items;
+                    PriEngine.Engine.Comercial.Vendas.PreencheDadosRelacionados(myEnc, rl);
+                    foreach (Model.OrderLine lin in lstlindv)
+                    {
+                        PriEngine.Engine.Comercial.Vendas.AdicionaLinha(myEnc, lin.CodProduct, lin.Quantity, "", "", lin.UnitPrice, lin.Discount);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Util.ErrorException(ex);
+                }
+
+                // PriEngine.Engine.Comercial.Compras.TransformaDocumento(
+                try
+                {
+                    PriEngine.Engine.IniciaTransaccao();
+                    PriEngine.Engine.Comercial.Vendas.Actualiza(myEnc, "Teste");
+                    PriEngine.Engine.TerminaTransaccao();
+                }
+                catch (Exception ex)
+                {
+                    PriEngine.Engine.DesfazTransaccao();
+                    return Util.ErrorException(ex);
+                }
+
+                return Util.Success();
+            }
+            else return Util.ErrorWrongCredentials();
+        }
+
+        #endregion Order
     }
 }

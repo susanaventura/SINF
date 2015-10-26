@@ -7,10 +7,15 @@ namespace OnlineStore.Lib_Primavera.Model
 {
     public class OrderLine
     {
-        // TODO Adicionar Produto
-
-        public int quantity { get; set; }
-        public float price { get; set; }
-        public float final_price { get; set; }
+        public string CodProduct { get; set; }
+        public string Description { get; set; }
+        public double Quantity { get; set; }
+        public string Unit { get; set; }
+        public double ValorIEC { get; set; }
+        public double Discount { get; set; }
+        public double UnitPrice { get; set; }
+        public double TotalPrediscount { get; set; }
+        public double Total { get; set; }
+        public double TotalIEC { get; set; }
     }
 }

@@ -7,10 +7,18 @@ namespace OnlineStore.Lib_Primavera.Model
 {
     public class Order
     {
-        public List<OrderLine> order_lines { get; set; }
-        public float sub_total { get; set; }
-        public float total_discount { get; set; }
-        public float shipping_cost { get; set; }
-        public float final_price { get; set; }
+        public string CodOrder { get; set; }
+        public string CodClient { get; set; }
+        public DateTime Date { get; set; }
+        public string DeliveryAddress { get; set; }
+        public string BillingAddress { get; set; }
+        public string Currency { get; set; }
+        public List<Model.OrderLine> Items { get; set; }
+        public double SubTotal { get; set; }
+        public double TotalDiscount { get; set; }
+        public double TotalShippingCosts { get; set; }
+        public double TotalIEC { get; set; }
+        public double Total { get; set; }
+        public double TotalIva { get; set; }
     }
 }

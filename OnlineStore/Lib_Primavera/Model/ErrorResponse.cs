@@ -7,10 +7,21 @@ namespace OnlineStore.Lib_Primavera.Model
 {
     public class ErrorResponse
     {
+
+        public const string WRONG_CREDENTIALS = "Wrong credentials";
+        public const string CLIENT_NOT_FOUND = "Client not found";
+        public const string SUCCESS = "Success";
+
         public int Error
         { get; set; }
 
         public string Description
         { get; set; }
+
+        public string Detail
+        { get; set; }
+
+        public object GetObject() { return new { Error = this.Description, Detail = this.Detail}; }
+
     }
 }

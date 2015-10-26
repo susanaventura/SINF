@@ -50,6 +50,13 @@ namespace OnlineStore.Lib_Primavera
 
         #region ErrorResponse
 
+        public static Lib_Primavera.Model.ErrorResponse Success()
+        {
+            Lib_Primavera.Model.ErrorResponse error = new Model.ErrorResponse();
+            error.Error = 0;
+            error.Description = Lib_Primavera.Model.ErrorResponse.SUCCESS;
+            return error;
+        }
 
         public static Lib_Primavera.Model.ErrorResponse ErrorWrongCredentials()
         {

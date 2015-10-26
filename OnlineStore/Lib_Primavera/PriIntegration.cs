@@ -144,10 +144,7 @@ namespace OnlineStore.Lib_Primavera
                 {
                     
                     StdBELista objArtigo = PriEngine.Engine.Consulta(
-                    /*    "SELECT Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, ArtigoMoeda.PVP1, ArtigoMoeda.Moeda, Anexos.Id From Artigo " +
-                    "JOIN ArtigoMoeda ON Artigo.Artigo = ArtigoMoeda.Artigo " +
-                    "LEFT JOIN Anexos ON Artigo.Artigo = Anexos.Chave AND Anexos.Tabela=4 AND Anexos.Tipo='IPR'"+
-                    "WHERE Artigo.Artigo='"+codProduct+"'" */
+                   
                     Model.Product.GetQuery(0, 1, false, codProduct)
                     );
                     return new Model.Product(objArtigo, true);

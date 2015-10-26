@@ -11,6 +11,8 @@ namespace OnlineStore.Lib_Primavera.Model
         public string CodClient { get; set; }
         public DateTime Date { get; set; }
         public List<Model.OrderLine> Items { get; set; }
+        public double SubTotal { get; set; }
+        public double TotalDiscount { get; set; }
         public double Total { get; set; }
     }
 }

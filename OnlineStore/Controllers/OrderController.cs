@@ -7,10 +7,16 @@ using System.Web.Http;
 
 namespace OnlineStore.Controllers
 {
-    public class OrderController : ApiController
+    public class OrdersController : ApiController
     {
         // GET /orders(?codClient=1)
         public IEnumerable<Lib_Primavera.Model.Order> Get([FromUri]string codClient = "") { 
+            // TODO
+            return null;
+        }
+
+        public Lib_Primavera.Model.Order Get(string codOrder)
+        {
             // TODO
             return null;
         }

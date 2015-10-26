@@ -142,18 +142,10 @@ namespace OnlineStore.Lib_Primavera
             {
                 if (PriEngine.Engine.Comercial.Artigos.Existe(codProduct))
                 {
-                    String sql = Model.Product.GetQuery(0, 1, false, codProduct);
-                    System.Diagnostics.Debug.WriteLine(sql);
-                    System.Diagnostics.Debug.WriteLine("");
-                    System.Diagnostics.Debug.WriteLine("");
-                    System.Diagnostics.Debug.WriteLine("");
-                    System.Diagnostics.Debug.WriteLine("");
+                    
                     StdBELista objArtigo = PriEngine.Engine.Consulta(
-                        /*    "SELECT Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, ArtigoMoeda.PVP1, ArtigoMoeda.Moeda, Anexos.Id From Artigo " +
-                        "JOIN ArtigoMoeda ON Artigo.Artigo = ArtigoMoeda.Artigo " +
-                        "LEFT JOIN Anexos ON Artigo.Artigo = Anexos.Chave AND Anexos.Tabela=4 AND Anexos.Tipo='IPR'"+
-                        "WHERE Artigo.Artigo='"+codProduct+"'" */
-                    sql
+                   
+                    Model.Product.GetQuery(0, 1, false, codProduct)
                     );
                     return new Model.Product(objArtigo, true);
                 }
@@ -181,9 +173,83 @@ namespace OnlineStore.Lib_Primavera
         }
 
         #endregion Product; //END PRODUCT
-
+    
+    
         //START ORDER
-        #region Order
+    #region Order;
+
+        public static List<Model.Order> ListOrders()
+        {
+
+            StdBELista objListCab;
+            StdBELista objListLin;
+            Model.Order order = new Model.Order();
+            List<Model.Order> listOrders = new List<Model.Order>();
+             
+            List<Model.OrderLine> orderLine_list = new List<Model.OrderLine>();
+
+            if (!Util.checkCredentials()) return null;
+
+            objListCab = PriEngine.Engine.Consulta("SELECT id, Entidade, Data, Moeda, TotalMerc, TotalDesc, TotalIEC, TotalIva, TotalOutros, MoradaEntrega, MoradaFac From CabecDoc where TipoDoc='ECL'");
+            while (!objListCab.NoFim())
+            {
+                order = new Model.Order();
+                order.CodOrder = objListCab.Valor("id");
+                order.CodClient = objListCab.Valor("Entidade");
+                order.Date = objListCab.Valor("Data");
+                order.SubTotal = objListCab.Valor("TotalMerc");
+                order.TotalDiscount = objListCab.Valor("TotalDesc");
+                order.TotalShippingCosts = objListCab.Valor("TotalOutros");
+                order.BillingAddress = objListCab.Valor("MoradaFac");
+                order.DeliveryAddress = objListCab.Valor("MoradaEntrega");
+                order.Currency = objListCab.Valor("Moeda");
+                order.TotalIva = objListCab.Valor("TotalIva");
+                order.TotalIEC = objListCab.Valor("TotalIEC");
+                order.Total = order.SubTotal + order.TotalIva + order.TotalShippingCosts + order.TotalIEC - order.TotalDiscount;
+
+
+                objListLin = PriEngine.Engine.Consulta("SELECT Artigo, Descricao, Quantidade, Unidade, PrecUnit, TotalDA, TotalILiquido, PrecoLiquido, TotalIEC, ValorIEC from LinhasDoc where IdCabecDoc='" + order.CodOrder + "' order By NumLinha");
+                
+                orderLine_list = new List<Model.OrderLine>();
+
+                while (!objListLin.NoFim())
+                {
+                    
+                    Model.OrderLine orderLine = new Model.OrderLine();
+                    orderLine.CodProduct = objListLin.Valor("Artigo");
+                    orderLine.Description = objListLin.Valor("Descricao");
+                    orderLine.Quantity = objListLin.Valor("Quantidade");
+                    orderLine.Unit = objListLin.Valor("Unidade");
+                    orderLine.Discount = objListLin.Valor("TotalDA");
+                    orderLine.UnitPrice = objListLin.Valor("PrecUnit");
+                    orderLine.TotalPrediscount = orderLine.Quantity * orderLine.UnitPrice;
+                    orderLine.ValorIEC = objListLin.Valor("ValorIEC");
+                    orderLine.TotalIEC = objListLin.Valor("TotalIEC");
+                    orderLine.Total = objListLin.Valor("PrecoLiquido");
+                    
+
+                    StdBELista listOfProducts = PriEngine.Engine.Consulta(Model.Product.GetQuery(0,1,true, orderLine.CodProduct));
+                    if (listOfProducts.NumLinhas() > 1) return null; //todo found more that one product
+
+                     for (; !listOfProducts.NoFim(); listOfProducts.Seguinte())
+                     {
+                         Model.Product p = new Model.Product(listOfProducts, true);
+                         orderLine.Main_image = p.Main_image;
+                     }
+
+                     orderLine_list.Add(orderLine);
+                    objListLin.Seguinte();
+                }
+
+                order.Items = orderLine_list;
+                listOrders.Add(order);
+                objListCab.Seguinte();
+                
+            }
+            return listOrders;
+        }
+
+
 
         public static Model.ErrorResponse NewOrder(Model.Order order)
         {
@@ -241,4 +307,9 @@ namespace OnlineStore.Lib_Primavera
 
         #endregion Order
     }
+
+
+
+
+
 }

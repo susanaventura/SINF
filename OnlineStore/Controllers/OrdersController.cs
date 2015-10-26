@@ -11,15 +11,24 @@ namespace OnlineStore.Controllers
     {
         // GET /orders(?codClient=1)
         public IEnumerable<Lib_Primavera.Model.Order> Get([FromUri]string codClient = "", [FromUri]string aux = "")
-        { 
-            // TODO
-            return null;
+        {
+            return Lib_Primavera.PriIntegration.ListOrders();
         }
 
         public Lib_Primavera.Model.Order Get(string codOrder)
         {
-            // TODO
             return null;
+            /*Lib_Primavera.Model.Order order = Lib_Primavera.PriIntegration.Encomenda_Get(id);
+            if (docvenda == null)
+            {
+                throw new HttpResponseException(
+                        Request.CreateResponse(HttpStatusCode.NotFound));
+
+            }
+            else
+            {
+                return docvenda;
+            }*/
         }
 
 

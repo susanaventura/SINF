@@ -202,12 +202,12 @@ namespace OnlineStore.Lib_Primavera
                 try
                 {
                     // Atribui valores ao cabecalho do doc
-                    //myEnc.set_DataDoc(dv.Data);
                     myEnc.set_Entidade(order.CodClient);
                     myEnc.set_Serie("A");
                     myEnc.set_Tipodoc("ECL");
                     myEnc.set_TipoEntidade("C");
                     myEnc.set_DataDoc(order.Date);
+
                     // Linhas do documento para a lista de linhas
                     lstlindv = order.Items;
                     PriEngine.Engine.Comercial.Vendas.PreencheDadosRelacionados(myEnc, rl);

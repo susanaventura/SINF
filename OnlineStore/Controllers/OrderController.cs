@@ -32,7 +32,7 @@ namespace OnlineStore.Controllers
                 response.Headers.Location = new Uri(uri);
                 return response;
             } else {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, error.Description);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, error.GetObject());
             }
         }
 

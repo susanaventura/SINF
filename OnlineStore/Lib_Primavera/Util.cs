@@ -55,6 +55,7 @@ namespace OnlineStore.Lib_Primavera
             Lib_Primavera.Model.ErrorResponse error = new Model.ErrorResponse();
             error.Error = 0;
             error.Description = Lib_Primavera.Model.ErrorResponse.SUCCESS;
+            error.Detail = error.Description;
             return error;
         }
 
@@ -63,6 +64,7 @@ namespace OnlineStore.Lib_Primavera
             Lib_Primavera.Model.ErrorResponse error = new Model.ErrorResponse();
             error.Error = 1;
             error.Description = Lib_Primavera.Model.ErrorResponse.WRONG_CREDENTIALS;
+            error.Detail = error.Description;
             return error;
         }
 
@@ -72,6 +74,7 @@ namespace OnlineStore.Lib_Primavera
             Lib_Primavera.Model.ErrorResponse error = new Model.ErrorResponse();
             error.Error = 1;
             error.Description = Lib_Primavera.Model.ErrorResponse.CLIENT_NOT_FOUND;
+            error.Detail = error.Description;
             return error;
         }
 
@@ -80,6 +83,7 @@ namespace OnlineStore.Lib_Primavera
             Lib_Primavera.Model.ErrorResponse error = new Model.ErrorResponse();
             error.Error = 1;
             error.Description = ex.Message;
+            error.Detail = ex.ToString();
             
             return error;
         }

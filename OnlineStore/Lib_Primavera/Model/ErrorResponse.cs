@@ -18,5 +18,10 @@ namespace OnlineStore.Lib_Primavera.Model
         public string Description
         { get; set; }
 
+        public string Detail
+        { get; set; }
+
+        public object GetObject() { return new { Error = this.Description, Detail = this.Detail}; }
+
     }
 }

@@ -9,26 +9,32 @@ namespace OnlineStore.Controllers
 {
     public class OrdersController : ApiController
     {
+        // GET /orders/IdOrder
+        public Lib_Primavera.Model.Order Get(string id)
+        {
+            Lib_Primavera.Model.Order order;
+            try { order = Lib_Primavera.PriIntegration.GetOrder(id); }
+            catch (Exception ex) {
+                throw new HttpResponseException(
+                    Request.CreateResponse(HttpStatusCode.BadRequest, Lib_Primavera.Util.ErrorException(ex).GetObject())
+                    );
+            }
+            if (order == null)
+                throw new HttpResponseException(
+                        Request.CreateResponse(HttpStatusCode.NotFound));   
+
+            else return order;
+        }
+
+
         // GET /orders(?codClient=1)
         public IEnumerable<Lib_Primavera.Model.Order> Get([FromUri]string codClient = "", [FromUri]string aux = "")
         {
-            return Lib_Primavera.PriIntegration.ListOrders();
-        }
-
-        public Lib_Primavera.Model.Order Get(string codOrder)
-        {
-            return null;
-            /*Lib_Primavera.Model.Order order = Lib_Primavera.PriIntegration.Encomenda_Get(id);
-            if (docvenda == null)
-            {
-                throw new HttpResponseException(
-                        Request.CreateResponse(HttpStatusCode.NotFound));
-
-            }
-            else
-            {
-                return docvenda;
-            }*/
+            System.Diagnostics.Debug.WriteLine("GET LIST");
+            System.Diagnostics.Debug.WriteLine("");
+            System.Diagnostics.Debug.WriteLine("");
+            System.Diagnostics.Debug.WriteLine("");
+            return Lib_Primavera.PriIntegration.ListOrders(codClient);
         }
 
 

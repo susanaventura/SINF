@@ -206,65 +206,88 @@ namespace OnlineStore.Lib_Primavera
         //START ORDER
         #region Order;
 
-        public static List<Model.Order> ListOrders()
+        public static Lib_Primavera.Model.Order GetOrder(string codOrder)
         {
+            Model.Order order = new Model.Order();
+            List<Model.OrderLine> orderLine_list = new List<Model.OrderLine>();
+
             StdBELista objListCab;
             StdBELista objListLin;
-            Model.Order order = new Model.Order();
-            List<Model.Order> listOrders = new List<Model.Order>();
-             
-            List<Model.OrderLine> orderLine_list = new List<Model.OrderLine>();
 
             if (!Util.checkCredentials()) return null;
 
-            objListCab = PriEngine.Engine.Consulta("SELECT id, Entidade, Data, Moeda, TotalMerc, TotalDesc, TotalIEC, TotalIva, TotalOutros, MoradaEntrega, MoradaFac From CabecDoc where TipoDoc='ECL'");
+            objListCab = PriEngine.Engine.Consulta("SELECT id, Entidade, Data, Moeda, TotalMerc, TotalDesc, TotalIEC, TotalIva, TotalOutros, MoradaEntrega, MoradaFac From CabecDoc where TipoDoc='ECL' AND id='" + codOrder + "'");
+
+
+            order = new Model.Order();
+            order.CodOrder = objListCab.Valor("id");
+            order.CodClient = objListCab.Valor("Entidade");
+            order.Date = objListCab.Valor("Data");
+            order.SubTotal = objListCab.Valor("TotalMerc");
+            order.TotalDiscount = objListCab.Valor("TotalDesc");
+            order.TotalShippingCosts = objListCab.Valor("TotalOutros");
+            order.BillingAddress = objListCab.Valor("MoradaFac");
+            order.DeliveryAddress = objListCab.Valor("MoradaEntrega");
+            order.Currency = objListCab.Valor("Moeda");
+            order.TotalIva = objListCab.Valor("TotalIva");
+            order.TotalIEC = objListCab.Valor("TotalIEC");
+            order.Total = order.SubTotal + order.TotalIva + order.TotalShippingCosts + order.TotalIEC - order.TotalDiscount;
+
+
+            objListLin = PriEngine.Engine.Consulta("SELECT Artigo, Descricao, Quantidade, Unidade, PrecUnit, TotalDA, TotalILiquido, PrecoLiquido, TotalIEC, ValorIEC from LinhasDoc where IdCabecDoc='" + order.CodOrder + "' order By NumLinha");
+
+            orderLine_list = new List<Model.OrderLine>();
+
+            while (!objListLin.NoFim())
+            {
+
+                Model.OrderLine orderLine = new Model.OrderLine();
+                orderLine.CodProduct = objListLin.Valor("Artigo");
+                orderLine.Description = objListLin.Valor("Descricao");
+                orderLine.Quantity = objListLin.Valor("Quantidade");
+                orderLine.Unit = objListLin.Valor("Unidade");
+                orderLine.Discount = objListLin.Valor("TotalDA");
+                orderLine.UnitPrice = objListLin.Valor("PrecUnit");
+                orderLine.TotalPrediscount = orderLine.Quantity * orderLine.UnitPrice;
+                orderLine.ValorIEC = objListLin.Valor("ValorIEC");
+                orderLine.TotalIEC = objListLin.Valor("TotalIEC");
+                orderLine.Total = objListLin.Valor("PrecoLiquido");
+
+
+                orderLine_list.Add(orderLine);
+                objListLin.Seguinte();
+            }
+
+            order.Items = orderLine_list;
+
+            return order;
+        }
+
+
+
+        public static List<Model.Order> ListOrders(string codClient)
+        {
+            if (!Util.checkCredentials()) return null;
+
+
+            List<Model.Order> listOrders = new List<Model.Order>();
+
+            StdBELista objListCab = new StdBELista();
+            if (codClient.Equals(""))
+                objListCab = PriEngine.Engine.Consulta("SELECT id, Entidade, Data, Moeda, TotalMerc, TotalDesc, TotalIEC, TotalIva, TotalOutros, MoradaEntrega, MoradaFac From CabecDoc where TipoDoc='ECL'");
+            else
+                objListCab = PriEngine.Engine.Consulta("SELECT id, Entidade, Data, Moeda, TotalMerc, TotalDesc, TotalIEC, TotalIva, TotalOutros, MoradaEntrega, MoradaFac From CabecDoc where TipoDoc='ECL' AND Entidade='" + codClient + "'");
+
             while (!objListCab.NoFim())
             {
-                order = new Model.Order();
-                order.CodOrder = objListCab.Valor("id");
-                order.CodClient = objListCab.Valor("Entidade");
-                order.Date = objListCab.Valor("Data");
-                order.SubTotal = objListCab.Valor("TotalMerc");
-                order.TotalDiscount = objListCab.Valor("TotalDesc");
-                order.TotalShippingCosts = objListCab.Valor("TotalOutros");
-                order.BillingAddress = objListCab.Valor("MoradaFac");
-                order.DeliveryAddress = objListCab.Valor("MoradaEntrega");
-                order.Currency = objListCab.Valor("Moeda");
-                order.TotalIva = objListCab.Valor("TotalIva");
-                order.TotalIEC = objListCab.Valor("TotalIEC");
-                order.Total = order.SubTotal + order.TotalIva + order.TotalShippingCosts + order.TotalIEC - order.TotalDiscount;
-
-
-                objListLin = PriEngine.Engine.Consulta("SELECT Artigo, Descricao, Quantidade, Unidade, PrecUnit, TotalDA, TotalILiquido, PrecoLiquido, TotalIEC, ValorIEC from LinhasDoc where IdCabecDoc='" + order.CodOrder + "' order By NumLinha");
-                
-                orderLine_list = new List<Model.OrderLine>();
-
-                while (!objListLin.NoFim())
-                {
-                    
-                    Model.OrderLine orderLine = new Model.OrderLine();
-                    orderLine.CodProduct = objListLin.Valor("Artigo");
-                    orderLine.Description = objListLin.Valor("Descricao");
-                    orderLine.Quantity = objListLin.Valor("Quantidade");
-                    orderLine.Unit = objListLin.Valor("Unidade");
-                    orderLine.Discount = objListLin.Valor("TotalDA");
-                    orderLine.UnitPrice = objListLin.Valor("PrecUnit");
-                    orderLine.TotalPrediscount = orderLine.Quantity * orderLine.UnitPrice;
-                    orderLine.ValorIEC = objListLin.Valor("ValorIEC");
-                    orderLine.TotalIEC = objListLin.Valor("TotalIEC");
-                    orderLine.Total = objListLin.Valor("PrecoLiquido");
-
-                     orderLine_list.Add(orderLine);
-                    objListLin.Seguinte();
-                }
-
-                order.Items = orderLine_list;
+                Model.Order order = GetOrder(objListCab.Valor("id"));
                 listOrders.Add(order);
                 objListCab.Seguinte();
-                
             }
+
             return listOrders;
         }
+
 
 
         public static Model.ErrorResponse NewOrder(Model.Order order)

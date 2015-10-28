@@ -265,7 +265,7 @@ namespace OnlineStore.Lib_Primavera
 
 
 
-        public static List<Model.Order> ListOrders(string codClient)
+        public static List<Model.Order> ListOrders(string codClient, bool fromOnlineStore)
         {
             if (!Util.checkCredentials()) return null;
 
@@ -273,10 +273,13 @@ namespace OnlineStore.Lib_Primavera
             List<Model.Order> listOrders = new List<Model.Order>();
 
             StdBELista objListCab = new StdBELista();
-            if (codClient.Equals(""))
-                objListCab = PriEngine.Engine.Consulta("SELECT id, Entidade, Data, Moeda, TotalMerc, TotalDesc, TotalIEC, TotalIva, TotalOutros, MoradaEntrega, MoradaFac From CabecDoc where TipoDoc='ECL'");
-            else
-                objListCab = PriEngine.Engine.Consulta("SELECT id, Entidade, Data, Moeda, TotalMerc, TotalDesc, TotalIEC, TotalIva, TotalOutros, MoradaEntrega, MoradaFac From CabecDoc where TipoDoc='ECL' AND Entidade='" + codClient + "'");
+
+            String query = "SELECT id, Entidade, Data, Moeda, TotalMerc, TotalDesc, TotalIEC, TotalIva, TotalOutros, MoradaEntrega, MoradaFac From CabecDoc where TipoDoc='ECL'";
+
+            if(!codClient.Equals("")) query+= " AND Entidade='" + codClient + "'";
+            if (fromOnlineStore) query += " AND Observacoes='" + Util.OBS_ONLINE_STORE + "'";
+
+            objListCab = PriEngine.Engine.Consulta(query);
 
             while (!objListCab.NoFim())
             {
@@ -314,6 +317,7 @@ namespace OnlineStore.Lib_Primavera
                     myEnc.set_DataDoc(order.Date);
                     myEnc.set_Morada(order.DeliveryAddress);
                     myEnc.set_MoradaFac(order.BillingAddress);
+                    myEnc.set_Observacoes(Util.OBS_ONLINE_STORE);
 
                     // Linhas do documento para a lista de linhas
                     lstlindv = order.Items;

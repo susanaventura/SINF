@@ -92,6 +92,8 @@ namespace OnlineStore.Lib_Primavera
         
         #endregion
 
-
+        #region Orders
+        public const string OBS_ONLINE_STORE = "Online Store";
+        #endregion
     }
 }

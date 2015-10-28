@@ -282,7 +282,48 @@ namespace OnlineStore.Lib_Primavera
 
         public static Lib_Primavera.Model.Store getStore(string codStore)
         {
-            GcpBEArmazem store;
+            GcpBEArmazem objStore = new GcpBEArmazem();
+            Model.Store store = new Model.Store();
+
+            if (Util.checkCredentials())
+            {
+                if (PriEngine.Engine.Comercial.Armazens.Existe(codStore))
+                {
+                    objStore = PriEngine.Engine.Comercial.Armazens.Edita(codStore);
+
+                    store.id = objStore.get_Armazem();
+                    store.name = objStore.get_Descricao();
+                    store.address = objStore.get_Morada();
+
+                    return store;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
+
+        public static List<Model.Store> listStores()
+        {
+            StdBELista storeList;
+
+            if (Util.checkCredentials())
+            {
+                storeList = PriEngine.Engine.Consulta("SELECT Armazens.Armazem, Armazens.Descricao, Armazens.Morada FROM Armazens");
+
+                return storeList;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        #endregion Store;
     }
 }

@@ -18,7 +18,9 @@ namespace OnlineStore.Controllers
             Lib_Primavera.Model.Product product = Lib_Primavera.PriIntegration.GetProduct(id);
             if (product == null)
             {
-                return null;
+                Lib_Primavera.Model.Store store = Lib_Primavera.PriIntegration.getStore(id);
+
+                return store;
                 /* throw new HttpResponseException(
                         Request.CreateResponse(HttpStatusCode.NotFound));*/
             }

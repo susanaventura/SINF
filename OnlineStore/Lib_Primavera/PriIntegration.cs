@@ -311,12 +311,18 @@ namespace OnlineStore.Lib_Primavera
         public static List<Model.Store> listStores()
         {
             StdBELista storeList;
+            List<Model.Store> finalList = new List<Model.Store>();
 
             if (Util.checkCredentials())
             {
                 storeList = PriEngine.Engine.Consulta("SELECT Armazens.Armazem, Armazens.Descricao, Armazens.Morada FROM Armazens");
 
-                return storeList;
+                for (; !storeList.NoFim(); storeList.Seguinte())
+                {
+                    finalList.Add(new Model.Store(storeList));
+                }
+
+                return finalList;
             }
             else
             {

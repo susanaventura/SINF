@@ -217,6 +217,7 @@ namespace OnlineStore.Lib_Primavera
             return new Model.Order(objListCab, true);
         }
 
+        
 
         public static List<Model.Order> ListOrders(string codClient, bool fromOnlineStore)
         {
@@ -334,5 +335,61 @@ namespace OnlineStore.Lib_Primavera
         
         #endregion 
 
+
+        //START STORE
+        #region Store
+
+        public static Lib_Primavera.Model.Store getStore(string codStore)
+        {
+            GcpBEArmazem objStore = new GcpBEArmazem();
+            Model.Store store = new Model.Store();
+
+            if (Util.checkCredentials())
+            {
+                if (PriEngine.Engine.Comercial.Armazens.Existe(codStore))
+                {
+                    objStore = PriEngine.Engine.Comercial.Armazens.Edita(codStore);
+
+                    store.id = objStore.get_Armazem();
+                    store.name = objStore.get_Descricao();
+                    store.address = objStore.get_Morada();
+
+                    return store;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static List<Model.Store> listStores()
+        {
+            StdBELista storeList;
+            List<Model.Store> finalList = new List<Model.Store>();
+
+            if (Util.checkCredentials())
+            {
+                storeList = PriEngine.Engine.Consulta("SELECT Armazens.Armazem, Armazens.Descricao, Armazens.Morada FROM Armazens");
+
+                for (; !storeList.NoFim(); storeList.Seguinte())
+                {
+                    finalList.Add(new Model.Store(storeList));
+                }
+
+                return finalList;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        #endregion Store;
+    
     }
 }

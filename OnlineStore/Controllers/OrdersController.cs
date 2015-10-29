@@ -30,10 +30,6 @@ namespace OnlineStore.Controllers
         // GET /orders(?codClient=1)
         public IEnumerable<Lib_Primavera.Model.Order> Get([FromUri]string codClient = "", [FromUri]bool onlineStore = false, [FromUri]string aux = "")
         {
-            System.Diagnostics.Debug.WriteLine("GET LIST");
-            System.Diagnostics.Debug.WriteLine("");
-            System.Diagnostics.Debug.WriteLine("");
-            System.Diagnostics.Debug.WriteLine("");
             return Lib_Primavera.PriIntegration.ListOrders(codClient, onlineStore);
         }
 

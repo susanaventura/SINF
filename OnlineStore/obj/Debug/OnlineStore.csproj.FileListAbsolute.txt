@@ -137,6 +137,6 @@ C:\Users\user\Documents\Visual Studio 2013\Projects\SINF\OnlineStore\bin\ko\Syst
 C:\Users\user\Documents\Visual Studio 2013\Projects\SINF\OnlineStore\bin\ru\System.Spatial.resources.dll
 C:\Users\user\Documents\Visual Studio 2013\Projects\SINF\OnlineStore\bin\zh-Hans\System.Spatial.resources.dll
 C:\Users\user\Documents\Visual Studio 2013\Projects\SINF\OnlineStore\bin\zh-Hant\System.Spatial.resources.dll
-C:\Users\user\Documents\Visual Studio 2013\Projects\SINF\OnlineStore\obj\Debug\OnlineStore.csprojResolveAssemblyReference.cache
 C:\Users\user\Documents\Visual Studio 2013\Projects\SINF\OnlineStore\obj\Debug\OnlineStore.dll
 C:\Users\user\Documents\Visual Studio 2013\Projects\SINF\OnlineStore\obj\Debug\OnlineStore.pdb
+C:\Users\user\Documents\Visual Studio 2013\Projects\SINF\OnlineStore\obj\Debug\OnlineStore.csprojResolveAssemblyReference.cache

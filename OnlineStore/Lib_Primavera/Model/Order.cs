@@ -22,9 +22,11 @@ namespace OnlineStore.Lib_Primavera.Model
         public double Total { get; set; }
         public double TotalIva { get; set; }
         public string Status { get; set; }
+        public int NumDoc { get; set; }
+        public string Serie { get; set; }
 
 
-        public Order() {}
+        public Order() { }
         public Order(StdBELista objListCab, bool getItems = false)
         {
             this.CodOrder = objListCab.Valor("id");
@@ -40,8 +42,11 @@ namespace OnlineStore.Lib_Primavera.Model
             this.TotalIEC = objListCab.Valor("TotalIEC");
             this.Total = this.SubTotal + this.TotalIva + this.TotalShippingCosts + this.TotalIEC - this.TotalDiscount;
             this.Status = Order.CalcStatus(objListCab);
-
+            this.NumDoc = objListCab.Valor("NumDoc");
+            this.Serie = objListCab.Valor("Serie");
             
+
+
             // Get Items List
             if (getItems)
             {
@@ -56,14 +61,14 @@ namespace OnlineStore.Lib_Primavera.Model
             }
         }
 
-        public static string GetQuery(string codOrder = "", string codClient = "", bool fromOnlineStore=false)
+        public static string GetQuery(string codOrder = "", string codClient = "", bool fromOnlineStore = false)
         {
             string query = "SELECT ";
-            query += 
-                "CabecDoc.id, CabecDoc.Entidade, CabecDoc.Data, CabecDoc.Moeda, CabecDoc.TotalMerc, CabecDoc.TotalDesc, CabecDoc.TotalIEC, "+
-                "CabecDoc.TotalIva, CabecDoc.TotalOutros, CabecDoc.MoradaEntrega, CabecDoc.MoradaFac, "+
+            query +=
+                "CabecDoc.id, CabecDoc.Entidade, CabecDoc.Data, CabecDoc.Moeda, CabecDoc.TotalMerc, CabecDoc.TotalDesc, CabecDoc.TotalIEC, " +
+                "CabecDoc.TotalIva, CabecDoc.TotalOutros, CabecDoc.MoradaEntrega, CabecDoc.NumDoc, CabecDoc.Serie, CabecDoc.MoradaFac, " +
                 "CabecDocStatus.Estado ";
-            
+
             query += "FROM CabecDoc ";
             query += "JOIN CabecDocStatus ON CabecDoc.id = CabecDocStatus.IdCabecDoc ";
 
@@ -78,14 +83,60 @@ namespace OnlineStore.Lib_Primavera.Model
         public static string CalcStatus(StdBELista order)
         {
             string r;
+            string id = order.Valor("Id");
             switch ((String)order.Valor("Estado"))
             {
-                case "T": r = "Shipped"; break;
-                case "G": r = "Waiting for Payment"; break;
+                case "T":
+                    if (isCanceled(id)) r = "Canceled";
+                    else if (isClosed(id)) r = "Delivered";
+                    else if (isTransformed(id, "FA"))
+                        r = "Paid. Processing";
+                    else if (isTransformed(order.Valor("Id"), "CR"))
+                        r = "Shipped";
+                    else r = "Incoherence dectected";
+                    break;
+
+                case "G":
+                    if (!isTransformed(id, "FA") && !isTransformed(id, "CR")) r = "Waiting for Payment";
+                    else
+                        r = "Incoherence detected";
+                    break;
+
                 case "P": r = "Approved"; break;
+
                 default: r = "Invalid"; break;
             }
+
             return r;
         }
+
+        /* Verifies if the order was transformed in other document
+         *
+         */
+        private static bool isTransformed(string codOrder, string docType)
+        {
+
+            StdBELista objListLin = PriEngine.Engine.Consulta("SELECT id FROM CabecDoc WHERE CabecDoc.IdDocOrigem='" + codOrder + "' and CabecDoc.TipoDoc='" + docType + "'");
+
+            if (objListLin == null) return false;
+
+            return true;
+
+        }
+
+        private static bool isClosed(string codOrder)
+        {
+            StdBELista objList = PriEngine.Engine.Consulta("SELECT Fechado FROM CabecDocStatus WHERE IdCabecDoc='" + codOrder + "'");
+           return objList.Valor("Fechado");
+            
+        }
+
+        private static bool isCanceled(string codOrder)
+        {
+            StdBELista objList = PriEngine.Engine.Consulta("SELECT Anulado FROM CabecDocStatus WHERE IdCabecDoc='" + codOrder + "'");
+            return objList.Valor("Anulado");
+            
+        }
+
     }
 }

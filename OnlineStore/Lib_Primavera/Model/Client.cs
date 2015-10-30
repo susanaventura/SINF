@@ -18,8 +18,9 @@ namespace OnlineStore.Lib_Primavera.Model
         public String Address { get; set; } //morada
         public String Taxpayer_num { get; set; }
         public String Currency { get; set; }
-       
-
+        public String Postal_Addr { get; set; }
+        public String Op_Zone { get; set; }
+        public String Local { get; set; }
 
     }
 }

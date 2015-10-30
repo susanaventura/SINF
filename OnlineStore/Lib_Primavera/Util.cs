@@ -27,8 +27,14 @@ namespace OnlineStore.Lib_Primavera
                 myCli.set_Nome(cli.Name);
                 myCli.set_Moeda(cli.Currency);
                 myCli.set_Morada(cli.Address);
+                myCli.set_Distrito("00");
+                myCli.set_CodigoPostal(cli.Postal_Addr);
+                myCli.set_LocalOperacao(cli.Op_Zone);
+                myCli.set_LocalidadeCodigoPostal(cli.Local);
                 myCli.set_B2BEnderecoMail(cli.Email);
                 myCli.set_NumContribuinte(cli.Taxpayer_num);
+                myCli.set_PessoaSingular(true);
+                myCli.set_TipoTerceiro("001");
 
                 PriEngine.Engine.Comercial.Clientes.Actualiza(myCli);
 

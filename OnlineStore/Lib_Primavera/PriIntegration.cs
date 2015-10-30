@@ -33,6 +33,9 @@ namespace OnlineStore.Lib_Primavera
                     myCli.Email = objCli.get_B2BEnderecoMail();
                     myCli.Taxpayer_num = objCli.get_NumContribuinte();
                     myCli.Address = objCli.get_Morada();
+                    myCli.Local = objCli.get_LocalidadeCodigoPostal();
+                    myCli.Postal_Addr = objCli.get_CodigoPostal();
+                    myCli.Op_Zone = objCli.get_LocalOperacao();
 
                     return myCli;
                 }
@@ -254,16 +257,17 @@ namespace OnlineStore.Lib_Primavera
                 try
                 {
                     // Atribui valores ao cabecalho do doc
-                    myEnc.set_Entidade(order.CodClient);
+                    
                     myEnc.set_Serie("A");
                     myEnc.set_Tipodoc("ECL");
+                    myEnc.set_Entidade(order.CodClient);
                     myEnc.set_TipoEntidade("C");
                     myEnc.set_DataDoc(order.Date);
                     myEnc.set_Morada(order.DeliveryAddress);
                     myEnc.set_MoradaFac(order.BillingAddress);
                     myEnc.set_ModoExp("02"); //transportadora
                     myEnc.set_ModoPag("MB");
-                    myEnc.set_CondPag("0");
+                    myEnc.set_CondPag("1");
                     myEnc.set_Observacoes(Util.OBS_ONLINE_STORE);
 
                     // Linhas do documento para a lista de linhas

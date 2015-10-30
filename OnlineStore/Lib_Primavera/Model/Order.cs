@@ -26,6 +26,8 @@ namespace OnlineStore.Lib_Primavera.Model
         public string Status { get; set; }
         public int NumDoc { get; set; }
         public string Serie { get; set; }
+        public String ShippementDate { get; set; }
+        public String ShippementHour { get; set; }
 
 
         public Order() { }
@@ -33,7 +35,7 @@ namespace OnlineStore.Lib_Primavera.Model
         {
             this.CodOrder = objListCab.Valor("id");
             this.CodClient = objListCab.Valor("Entidade");
-            this.Date = objListCab.Valor("Data");
+            //this.Date = objListCab.Valor("Data");
             this.SubTotal = objListCab.Valor("TotalMerc");
             this.TotalDiscount = objListCab.Valor("TotalDesc");
             this.TotalShippingCosts = objListCab.Valor("TotalOutros");
@@ -48,6 +50,7 @@ namespace OnlineStore.Lib_Primavera.Model
             this.Serie = objListCab.Valor("Serie");
             this.ShippingMethod = objListCab.Valor("ModoExp");
             this.PaymentMethod = objListCab.Valor("ModoPag");
+
             
 
 
@@ -88,26 +91,44 @@ namespace OnlineStore.Lib_Primavera.Model
         {
             string r;
             string id = order.Valor("Id");
-            string serieNum = order.Valor("Serie") + order.Valor("NumDoc");
+           
             switch ((String)order.Valor("Estado"))
             {
                 case "T":
                     if (isCanceled(id)) r = "Canceled";
-                    else if (isClosed(id)) r = "Delivered";
-                    else if (isTransformed(serieNum, "FA"))
-                        r = "Paid. Processing";
-                    else if (isTransformed(serieNum, "CR"))
-                        r = "Shipped";
-                    else r = "Incoherence dectected";
+
+                    else
+                    {
+                        Order billing = getBilling(order);
+                        if (billing == null) r = "incoherence detected";
+                        else
+                        {
+                            if (orderIsPaid(billing))
+                            {
+                                DateTime date = Convert.ToDateTime(billing.ShippementDate);
+                                //check shipping date
+                                if (DateTime.Compare(date, DateTime.Now) > 0)
+                                    r = "Paid. Processing";
+                                else
+                                {
+                                    DateTime time = Convert.ToDateTime(billing.ShippementHour);
+                                    if (DateTime.Compare(time, DateTime.Now) > 0)
+                                        r = "Paid. Processing";
+                                    else r = "Shipped";
+                                }
+
+
+                            }
+                            else r = "Wating for payment";
+                        }
+                    }
+
                     break;
 
                 case "G":
-                    if (!isTransformed(serieNum, "FA") && !isTransformed(serieNum, "CR")) r = "Waiting for Payment";
-                    else
-                        r = "Incoherence detected";
-                    break;
+                   r = "Wating for payment"; break;
 
-                case "P": r = "Approved"; break;
+                case "P": r = "Wating for payment"; break;
 
                 default: r = "Invalid"; break;
             }
@@ -115,18 +136,18 @@ namespace OnlineStore.Lib_Primavera.Model
             return r;
         }
 
-        /* Verifies if the order was transformed in other document
-         *
-         */
-        private static bool isTransformed(string serieNum, string docType)
+
+
+        private static Order getBilling(StdBELista order)
         {
+            StdBELista billing = PriEngine.Engine.Consulta("SELECT Serie, NumDoc, HoraCarga, DataCarga FROM CabecDoc WHERE TipoDoc='FA' and RefDocOrig='ECL "+order.Valor("NumDoc")+"/"+order.Valor("Serie")+"'");
+            if (billing.Vazia()) return null;
 
-            StdBELista objListLin = PriEngine.Engine.Consulta("SELECT id FROM CabecDoc WHERE CabecDoc.Requisicao='" + serieNum + "' and CabecDoc.TipoDoc='" + docType + "'");
-
-            if (objListLin.NumLinhas()==0) return false;
-
-            return true;
-
+            Order b = new Order();
+            b.Serie = billing.Valor("Serie"); b.NumDoc = billing.Valor("NumDoc");
+            b.ShippementHour = billing.Valor("HoraCarga");
+            b.ShippementDate = billing.Valor("DataCarga");
+            return b;
         }
 
         private static bool isClosed(string codOrder)
@@ -135,6 +156,15 @@ namespace OnlineStore.Lib_Primavera.Model
            return objList.Valor("Fechado");
             
         }
+
+        private static bool orderIsPaid(Order billing)
+        {
+            StdBELista objListLin = PriEngine.Engine.Consulta("SELECT NumDoc FROM CabLiq WHERE TipoDoc='RE' and DocLiq='FA " + billing.Serie + "/" + billing.NumDoc+"'");
+            return !objListLin.Vazia();
+
+        }
+
+
 
         private static bool isCanceled(string codOrder)
         {

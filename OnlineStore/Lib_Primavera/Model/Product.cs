@@ -16,6 +16,7 @@ namespace OnlineStore.Lib_Primavera.Model
         public String Category { get; set; }
         public float Discount { get; set; }
         public double Points { get; set; }
+        public int CurrentStock { get; set; }
 
         public Product() { }
         public Product(StdBELista objArtigo)
@@ -29,12 +30,13 @@ namespace OnlineStore.Lib_Primavera.Model
             this.Currency = objArtigo.Valor("Moeda");
             this.Unit = objArtigo.Valor("UnidadeBase");
             this.Category = objArtigo.Valor("Familia");
+            this.CurrentStock = objArtigo.Valor("STKActual");
 
         }
 
         public static String GetQuery(int offset=0, int limit=1, string codProduct="", string codCategory="", string codStore="", bool filterOnSale=false, bool filterPoints=false) {
             String query = "";
-            String cols = "Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, Artigo.Familia, Artigo.Desconto, ArtigoMoeda.PVP1, ArtigoMoeda.PVP6, ArtigoMoeda.Moeda";
+            String cols = "Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, Artigo.Familia, Artigo.Desconto, Artigo.STKActual, ArtigoMoeda.PVP1, ArtigoMoeda.PVP6, ArtigoMoeda.Moeda";
             String outcols = "Artigo, Descricao, UnidadeBase, Familia, Desconto, PVP1, PVP6, Moeda";
           
 

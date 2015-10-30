@@ -14,6 +14,8 @@ namespace OnlineStore.Lib_Primavera.Model
         public string DeliveryAddress { get; set; }
         public string BillingAddress { get; set; }
         public string Currency { get; set; }
+        public string ShippingMethod {get; set;}
+        public string PaymentMethod { get; set; }
         public List<Model.OrderLine> Items { get; set; }
         public double SubTotal { get; set; }
         public double TotalDiscount { get; set; }
@@ -44,6 +46,8 @@ namespace OnlineStore.Lib_Primavera.Model
             this.Status = Order.CalcStatus(objListCab);
             this.NumDoc = objListCab.Valor("NumDoc");
             this.Serie = objListCab.Valor("Serie");
+            this.ShippingMethod = objListCab.Valor("ModoExp");
+            this.PaymentMethod = objListCab.Valor("ModoPag");
             
 
 
@@ -66,7 +70,7 @@ namespace OnlineStore.Lib_Primavera.Model
             string query = "SELECT ";
             query +=
                 "CabecDoc.id, CabecDoc.Entidade, CabecDoc.Data, CabecDoc.Moeda, CabecDoc.TotalMerc, CabecDoc.TotalDesc, CabecDoc.TotalIEC, " +
-                "CabecDoc.TotalIva, CabecDoc.TotalOutros, CabecDoc.MoradaEntrega, CabecDoc.NumDoc, CabecDoc.Serie, CabecDoc.MoradaFac, " +
+                "CabecDoc.TotalIva, CabecDoc.TotalOutros, CabecDoc.MoradaEntrega, CabecDoc.NumDoc, CabecDoc.Serie, CabecDoc.MoradaFac, CabecDoc.ModoExp, CabecDoc.ModoPag, " +
                 "CabecDocStatus.Estado ";
 
             query += "FROM CabecDoc ";
@@ -84,20 +88,21 @@ namespace OnlineStore.Lib_Primavera.Model
         {
             string r;
             string id = order.Valor("Id");
+            string serieNum = order.Valor("Serie") + order.Valor("NumDoc");
             switch ((String)order.Valor("Estado"))
             {
                 case "T":
                     if (isCanceled(id)) r = "Canceled";
                     else if (isClosed(id)) r = "Delivered";
-                    else if (isTransformed(id, "FA"))
+                    else if (isTransformed(serieNum, "FA"))
                         r = "Paid. Processing";
-                    else if (isTransformed(order.Valor("Id"), "CR"))
+                    else if (isTransformed(serieNum, "CR"))
                         r = "Shipped";
                     else r = "Incoherence dectected";
                     break;
 
                 case "G":
-                    if (!isTransformed(id, "FA") && !isTransformed(id, "CR")) r = "Waiting for Payment";
+                    if (!isTransformed(serieNum, "FA") && !isTransformed(serieNum, "CR")) r = "Waiting for Payment";
                     else
                         r = "Incoherence detected";
                     break;
@@ -113,12 +118,12 @@ namespace OnlineStore.Lib_Primavera.Model
         /* Verifies if the order was transformed in other document
          *
          */
-        private static bool isTransformed(string codOrder, string docType)
+        private static bool isTransformed(string serieNum, string docType)
         {
 
-            StdBELista objListLin = PriEngine.Engine.Consulta("SELECT id FROM CabecDoc WHERE CabecDoc.IdDocOrigem='" + codOrder + "' and CabecDoc.TipoDoc='" + docType + "'");
+            StdBELista objListLin = PriEngine.Engine.Consulta("SELECT id FROM CabecDoc WHERE CabecDoc.Requisicao='" + serieNum + "' and CabecDoc.TipoDoc='" + docType + "'");
 
-            if (objListLin == null) return false;
+            if (objListLin.NumLinhas()==0) return false;
 
             return true;
 

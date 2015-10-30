@@ -7,7 +7,7 @@ using System.Web.Http;
 
 namespace OnlineStore.Controllers
 {
-    public class CategoryController : ApiController
+    public class CategoriesController : ApiController
     {
         public IEnumerable<Lib_Primavera.Model.Category> Get([FromUri]string page = "", [FromUri]string codStore = "", [FromUri]string codCategory = "",
                 [FromUri]string filterNew = "", [FromUri]string filterRecent = "", [FromUri]string filterOnSale = "", [FromUri]string filterPoints = "")

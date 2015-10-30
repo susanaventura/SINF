@@ -8,7 +8,7 @@ using System.Web.Http;
 
 namespace OnlineStore.Controllers
 {
-    public class StoreController : ApiController
+    public class StoresController : ApiController
     {
         // GET api/store/5    
         public Store Get(string id)

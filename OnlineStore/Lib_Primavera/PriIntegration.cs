@@ -53,8 +53,6 @@ namespace OnlineStore.Lib_Primavera
             
             Lib_Primavera.Model.ErrorResponse error = new Model.ErrorResponse();
 
-            String s = "Hello World"
-
             GcpBECliente myCli = new GcpBECliente();
 
             try

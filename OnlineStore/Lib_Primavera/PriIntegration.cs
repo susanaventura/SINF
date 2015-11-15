@@ -176,6 +176,7 @@ namespace OnlineStore.Lib_Primavera
 
         #endregion Product; //END PRODUCT
 
+        //START CATEGORIES
         #region Categories
 
         public static List<Model.Category> Categories_List()
@@ -185,12 +186,13 @@ namespace OnlineStore.Lib_Primavera
 
             if (PriEngine.InitializeCompany(OnlineStore.Properties.Settings.Default.Company.Trim(), OnlineStore.Properties.Settings.Default.User.Trim(), OnlineStore.Properties.Settings.Default.Password.Trim()))
             {
-                objList = PriEngine.Engine.Consulta("SELECT Descricao FROM familias");
+                objList = PriEngine.Engine.Consulta("SELECT Familia, Descricao FROM familias");
                 while (!objList.NoFim())
                 {
                     Model.Category newCat = new Model.Category();
 
                     newCat.name = objList.Valor("Descricao");
+                    newCat.code = objList.Valor("Familia");
 
                     categories.Add(newCat);
 

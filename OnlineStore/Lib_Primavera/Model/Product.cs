@@ -34,16 +34,17 @@ namespace OnlineStore.Lib_Primavera.Model
 
         }
 
-        public static String GetQuery(int offset=0, int limit=1, string codProduct="", string codCategory="", string codStore="", bool filterOnSale=false, bool filterPoints=false) {
+        public static String GetQuery(int offset=0, int limit=1, string codProduct="", string codCategory="", string codStore="", bool filterOnSale=false, bool filterPoints=false, bool count=false) {
             String query = "";
             String cols = "Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, Artigo.Familia, Artigo.Desconto, ArtigoMoeda.PVP1, ArtigoMoeda.PVP6, ArtigoMoeda.Moeda";
             String outcols = "Artigo, Descricao, UnidadeBase, Familia, Desconto, PVP1, PVP6, Moeda";
-          
+            if (count) cols = "COUNT(*) AS Count";
 
-            query = "SELECT " + outcols + " FROM (";
+            if (!count) query = "SELECT " + outcols + " FROM ("; else query = "";
             
                 // Select Cols
-                query += "SELECT "+cols+", ROW_NUMBER() OVER (ORDER BY Artigo.Artigo) AS RowNum ";
+                query += "SELECT " + cols + " ";
+                if (!count) query += ", ROW_NUMBER() OVER (ORDER BY Artigo.Artigo) AS RowNum ";
 
                 // Join Tables
                 query += "FROM Artigo ";
@@ -57,10 +58,9 @@ namespace OnlineStore.Lib_Primavera.Model
                 if (filterPoints) query += "AND ArtigoMoeda.PVP6 > 0 ";
                 if (filterOnSale) query += "AND Artigo.Desconto > 0 ";
 
-            
-           query += ") AS MyDerivedTable WHERE MyDerivedTable.RowNum BETWEEN " + (offset+1) + " AND " + (offset+limit);
 
-          
+            if (!count) query += ") AS MyDerivedTable WHERE MyDerivedTable.RowNum BETWEEN " + (offset + 1) + " AND " + (offset + limit);
+                    
                 
            return query;        
         }

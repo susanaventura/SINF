@@ -156,20 +156,29 @@ namespace OnlineStore.Lib_Primavera
             else return null;
         }
 
-        public static List<Model.Product> ListProducts(int offset = 0, int limit = 1, string codCategory = "", string codStore = "", bool filterOnSale = false, bool filterPoints = false)
+        public static ProductListing ListProducts(int offset = 0, int limit = 1, string codCategory = "", string codStore = "", bool filterOnSale = false, bool filterPoints = false)
         {
 
             StdBELista objList;
-            List<Model.Product> listArts = new List<Model.Product>();
+            ProductListing productListing = new ProductListing();
+            productListing.products = new List<Model.Product>();
 
             if (Util.checkCredentials())
             {
+                // Product List
                 objList = PriEngine.Engine.Consulta(Model.Product.GetQuery(offset, limit, "", codCategory, codStore, filterOnSale, filterPoints));
 
                 for (; !objList.NoFim(); objList.Seguinte())
-                    listArts.Add(new Model.Product(objList));
+                    productListing.products.Add(new Model.Product(objList));
 
-                return listArts;
+                // Hit count
+                objList = PriEngine.Engine.Consulta(Model.Product.GetQuery(offset, limit, "", codCategory, codStore, filterOnSale, filterPoints, true));
+                productListing.numResults = objList.Valor("Count");
+
+                // Page Size
+                productListing.pageSize = limit;
+
+                return productListing;
             }
             else return null;
         }

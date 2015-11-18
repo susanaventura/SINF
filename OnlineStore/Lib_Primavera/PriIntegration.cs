@@ -18,26 +18,16 @@ namespace OnlineStore.Lib_Primavera
         {
             Lib_Primavera.Model.ErrorResponse error = new Model.ErrorResponse();
 
-            GcpBECliente objCli = new GcpBECliente();
-            Model.Client myCli = new Model.Client();
 
             if (Util.checkCredentials())
             {
 
                 if (PriEngine.Engine.Comercial.Clientes.Existe(codClient))
                 {
-                    objCli = PriEngine.Engine.Comercial.Clientes.Edita(codClient);
-                    myCli.CodClient = objCli.get_Cliente();
-                    myCli.Name = objCli.get_Nome();
-                    myCli.Currency = objCli.get_Moeda();
-                    myCli.Email = objCli.get_B2BEnderecoMail();
-                    myCli.Taxpayer_num = objCli.get_NumContribuinte();
-                    myCli.Address = objCli.get_Morada();
-                    myCli.Local = objCli.get_LocalidadeCodigoPostal();
-                    myCli.Postal_Addr = objCli.get_CodigoPostal();
-                    myCli.Op_Zone = objCli.get_LocalOperacao();
 
-                    return myCli;
+                    StdBELista objClient = PriEngine.Engine.Consulta(Model.Client.GetQuery(codClient));
+
+                    return new Model.Client(objClient);
                 }
                 else
                 {

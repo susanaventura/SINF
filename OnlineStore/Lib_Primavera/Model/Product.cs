@@ -34,17 +34,48 @@ namespace OnlineStore.Lib_Primavera.Model
 
         }
 
-        public static String GetQuery(int offset=0, int limit=1, string codProduct="", string codCategory="", string codStore="", bool filterOnSale=false, bool filterPoints=false, bool count=false) {
+        public class QueryParams {
+            public int Offset {get; set;}
+            public int Limit { get; set; }
+            public string CodProduct { get; set; }
+            public string CodCategory { get; set; }
+            public string CodStore { get; set; }
+            public bool FilterOnSale { get; set; }
+            public bool FilterPoints { get; set; }
+            public bool Count { get; set; }
+            public bool SortDate { get; set; }
+
+            public QueryParams() {
+                this.Offset = 0;
+                this.Limit = 1;
+                this.CodProduct = "";
+                this.CodCategory = "";
+                this.CodStore = "";
+                this.FilterOnSale = false;
+                this.FilterPoints = false;
+                this.Count = false;
+                this.SortDate = false;
+            }
+        }
+
+        public static String GetQuery(QueryParams param)
+        {
             String query = "";
             String cols = "Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, Artigo.Familia, Artigo.Desconto, ArtigoMoeda.PVP1, ArtigoMoeda.PVP6, ArtigoMoeda.Moeda";
             String outcols = "Artigo, Descricao, UnidadeBase, Familia, Desconto, PVP1, PVP6, Moeda";
-            if (count) cols = "COUNT(*) AS Count";
+            if (param.Count) cols = "COUNT(*) AS Count";
 
-            if (!count) query = "SELECT " + outcols + " FROM ("; else query = "";
+            if (!param.Count) query = "SELECT " + outcols + " FROM ("; else query = "";
             
                 // Select Cols
                 query += "SELECT " + cols + " ";
-                if (!count) query += ", ROW_NUMBER() OVER (ORDER BY Artigo.Artigo) AS RowNum ";
+                if (!param.Count) {
+                    query += ", ROW_NUMBER() OVER (ORDER BY ";
+                        // Order
+                        if (param.SortDate) query += "Artigo.DataUltimaActualizacao DESC";
+                        else query += "Artigo.Artigo ASC";
+                    query += ") AS RowNum ";
+                }
 
                 // Join Tables
                 query += "FROM Artigo ";
@@ -52,16 +83,15 @@ namespace OnlineStore.Lib_Primavera.Model
 
                 // Conditions
                 query += "WHERE (1=1) ";
-                if (codProduct != "") query += "AND Artigo.Artigo='" + codProduct + "' ";
-                if (codCategory != "") query += "AND Artigo.Familia='" + codCategory + "' ";
-                if (codStore != "") query += "AND Artigo.Artigo IN (SELECT Artigo FROM ArtigoArmazem WHERE Armazem='" + codStore + "') ";
-                if (filterPoints) query += "AND ArtigoMoeda.PVP6 > 0 ";
-                if (filterOnSale) query += "AND Artigo.Desconto > 0 ";
+                if (param.CodProduct != "") query += "AND Artigo.Artigo='" + param.CodProduct + "' ";
+                if (param.CodCategory != "") query += "AND Artigo.Familia='" + param.CodCategory + "' ";
+                if (param.CodStore != "") query += "AND Artigo.Artigo IN (SELECT Artigo FROM ArtigoArmazem WHERE Armazem='" + param.CodStore + "') ";
+                if (param.FilterPoints) query += "AND ArtigoMoeda.PVP6 > 0 ";
+                if (param.FilterOnSale) query += "AND Artigo.Desconto > 0 ";
 
+   
+                if (!param.Count) query += ") AS MyDerivedTable WHERE MyDerivedTable.RowNum BETWEEN " + (param.Offset + 1) + " AND " + (param.Offset + param.Limit);
 
-            if (!count) query += ") AS MyDerivedTable WHERE MyDerivedTable.RowNum BETWEEN " + (offset + 1) + " AND " + (offset + limit);
-                    
-                
            return query;        
         }
     }

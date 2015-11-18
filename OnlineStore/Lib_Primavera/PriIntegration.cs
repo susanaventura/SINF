@@ -144,11 +144,10 @@ namespace OnlineStore.Lib_Primavera
             {
                 if (PriEngine.Engine.Comercial.Artigos.Existe(codProduct))
                 {
-                    
-                    StdBELista objArtigo = PriEngine.Engine.Consulta(
-                   
-                    Model.Product.GetQuery(0, 1, codProduct)
-                    );
+
+                    Product.QueryParams param = new Product.QueryParams();
+                    param.CodProduct = codProduct;
+                    StdBELista objArtigo = PriEngine.Engine.Consulta( Model.Product.GetQuery(param) );
                     return new Model.Product(objArtigo);
                 }
                 else return null;
@@ -156,7 +155,7 @@ namespace OnlineStore.Lib_Primavera
             else return null;
         }
 
-        public static ProductListing ListProducts(int offset = 0, int limit = 1, string codCategory = "", string codStore = "", bool filterOnSale = false, bool filterPoints = false)
+        public static ProductListing ListProducts(int offset = 0, int limit = 1, string codCategory = "", string codStore = "", bool filterOnSale = false, bool filterPoints = false, bool sortDate=false)
         {
 
             StdBELista objList;
@@ -165,14 +164,24 @@ namespace OnlineStore.Lib_Primavera
 
             if (Util.checkCredentials())
             {
+                Product.QueryParams param = new Product.QueryParams();
+                param.Offset = offset;
+                param.Limit = limit;
+                param.CodCategory = codCategory;
+                param.CodStore = codStore;
+                param.FilterOnSale = filterOnSale;
+                param.FilterPoints = filterPoints;
+                param.SortDate = sortDate;
+
                 // Product List
-                objList = PriEngine.Engine.Consulta(Model.Product.GetQuery(offset, limit, "", codCategory, codStore, filterOnSale, filterPoints));
+                objList = PriEngine.Engine.Consulta(Model.Product.GetQuery(param));
 
                 for (; !objList.NoFim(); objList.Seguinte())
                     productListing.products.Add(new Model.Product(objList));
 
                 // Hit count
-                objList = PriEngine.Engine.Consulta(Model.Product.GetQuery(offset, limit, "", codCategory, codStore, filterOnSale, filterPoints, true));
+                param.Count = true;
+                objList = PriEngine.Engine.Consulta(Model.Product.GetQuery(param));
                 productListing.numResults = objList.Valor("Count");
 
                 // Page Size

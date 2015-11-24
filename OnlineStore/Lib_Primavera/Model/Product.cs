@@ -45,6 +45,7 @@ namespace OnlineStore.Lib_Primavera.Model
             public bool Count { get; set; }
             public bool SortDate { get; set; }
             public string SearchString { get; set; }
+            public bool SortLastSold { get; set; }
 
             public QueryParams() {
                 this.Offset = 0;
@@ -57,6 +58,7 @@ namespace OnlineStore.Lib_Primavera.Model
                 this.Count = false;
                 this.SortDate = false;
                 this.SearchString = "";
+                this.SortLastSold = false;
             }
         }
 
@@ -75,6 +77,7 @@ namespace OnlineStore.Lib_Primavera.Model
                     query += ", ROW_NUMBER() OVER (ORDER BY ";
                         // Order
                         if (param.SortDate) query += "Artigo.DataUltimaActualizacao DESC";
+                        else if (param.SortLastSold) query += "Artigo.DataUltSaida DESC";
                         else query += "Artigo.Artigo ASC";
                     query += ") AS RowNum ";
                 }
@@ -90,7 +93,7 @@ namespace OnlineStore.Lib_Primavera.Model
                 if (param.CodStore != "") query += "AND Artigo.Artigo IN (SELECT Artigo FROM ArtigoArmazem WHERE Armazem='" + param.CodStore + "') ";
                 if (param.FilterPoints) query += "AND ArtigoMoeda.PVP6 > 0 ";
                 if (param.FilterOnSale) query += "AND Artigo.Desconto > 0 ";
-                if (param.SearchString != "") query += "AND Artigo.Desconto LIKE '%" + param.SearchString+"%' ";
+                if (param.SearchString != "") query += "AND Artigo.Descricao LIKE '%" + param.SearchString+"%' ";
 
    
                 if (!param.Count) query += ") AS MyDerivedTable WHERE MyDerivedTable.RowNum BETWEEN " + (param.Offset + 1) + " AND " + (param.Offset + param.Limit);

@@ -58,7 +58,7 @@ namespace OnlineStore.Lib_Primavera.Model
             if (getItems)
             {
                 this.Items = new List<Model.OrderLine>();
-                StdBELista objListLin = PriEngine.Engine.Consulta("SELECT Artigo, Descricao, Quantidade, Unidade, PrecUnit, TotalDA, TotalILiquido, PrecoLiquido, TotalIEC, ValorIEC FROM LinhasDoc WHERE IdCabecDoc='" + this.CodOrder + "' ORDER BY NumLinha");
+                StdBELista objListLin = PriEngine.Engine.Consulta("SELECT Artigo, Descricao, Quantidade, Desconto1, PrecUnit, TotalDA, TotalILiquido, PrecoLiquido, TotalIEC, ValorIEC, TotalIva, TaxaIva FROM LinhasDoc WHERE IdCabecDoc='" + this.CodOrder + "' ORDER BY NumLinha");
 
                 while (!objListLin.NoFim())
                 {

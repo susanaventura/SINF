@@ -16,6 +16,7 @@ namespace OnlineStore.Lib_Primavera.Model
         public String Category { get; set; }
         public float Discount { get; set; }
         public double Points { get; set; }
+        public double IECValue { get; set; }
         //public float CurrentStock { get; set; }
 
         public Product() { }
@@ -30,6 +31,7 @@ namespace OnlineStore.Lib_Primavera.Model
             this.Currency = objArtigo.Valor("Moeda");
             this.Unit = objArtigo.Valor("UnidadeBase");
             this.Category = objArtigo.Valor("Familia");
+            this.IECValue = objArtigo.Valor("ValorIEC");
             //if(objArtigo.Valor("STKActual") != null) this.CurrentStock = objArtigo.Valor("STKActual");
 
         }
@@ -65,8 +67,8 @@ namespace OnlineStore.Lib_Primavera.Model
         public static String GetQuery(QueryParams param)
         {
             String query = "";
-            String cols = "Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, Artigo.Familia, Artigo.Desconto, ArtigoMoeda.PVP1, ArtigoMoeda.PVP6, ArtigoMoeda.Moeda";
-            String outcols = "Artigo, Descricao, UnidadeBase, Familia, Desconto, PVP1, PVP6, Moeda";
+            String cols = "Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, Artigo.Familia, Artigo.Desconto, Artigo.ValorIEC, ArtigoMoeda.PVP1, ArtigoMoeda.PVP6, ArtigoMoeda.Moeda";
+            String outcols = "Artigo, Descricao, UnidadeBase, Familia, Desconto, ISNULL(ValorIEC,0) as ValorIEC, PVP1, PVP6, Moeda";
             if (param.Count) cols = "COUNT(*) AS Count";
 
             if (!param.Count) query = "SELECT " + outcols + " FROM ("; else query = "";

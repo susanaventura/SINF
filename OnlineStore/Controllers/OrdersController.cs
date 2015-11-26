@@ -38,7 +38,7 @@ namespace OnlineStore.Controllers
         public HttpResponseMessage Post(Lib_Primavera.Model.Order order) {
             Lib_Primavera.Model.ErrorResponse error = Lib_Primavera.PriIntegration.NewOrder(order);
             if (error.Error == 0) {
-                var response = Request.CreateResponse(HttpStatusCode.Created, order.CodOrder);
+                var response = Request.CreateResponse(HttpStatusCode.Created, "Success");
                 string uri = Url.Link("DefaultApi", new { DocId = order.CodOrder });
                 response.Headers.Location = new Uri(uri);
                 return response;

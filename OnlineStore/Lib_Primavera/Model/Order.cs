@@ -35,7 +35,7 @@ namespace OnlineStore.Lib_Primavera.Model
         {
             this.CodOrder = objListCab.Valor("id");
             this.CodClient = objListCab.Valor("Entidade");
-            //this.Date = objListCab.Valor("Data");
+            this.Date = objListCab.Valor("DataGravacao");
             this.SubTotal = objListCab.Valor("TotalMerc");
             this.TotalDiscount = objListCab.Valor("TotalDesc");
             this.TotalShippingCosts = objListCab.Valor("TotalOutros");
@@ -50,8 +50,6 @@ namespace OnlineStore.Lib_Primavera.Model
             this.Serie = objListCab.Valor("Serie");
             this.ShippingMethod = objListCab.Valor("ModoExp");
             this.PaymentMethod = objListCab.Valor("ModoPag");
-
-            
 
 
             // Get Items List
@@ -72,7 +70,7 @@ namespace OnlineStore.Lib_Primavera.Model
         {
             string query = "SELECT ";
             query +=
-                "CabecDoc.id, CabecDoc.Entidade, CabecDoc.Data, CabecDoc.Moeda, CabecDoc.TotalMerc, CabecDoc.TotalDesc, CabecDoc.TotalIEC, " +
+                "CabecDoc.id, CabecDoc.Entidade, CabecDoc.DataGravacao, CabecDoc.Moeda, CabecDoc.TotalMerc, CabecDoc.TotalDesc, CabecDoc.TotalIEC, " +
                 "CabecDoc.TotalIva, CabecDoc.TotalOutros, CabecDoc.MoradaEntrega, CabecDoc.NumDoc, CabecDoc.Serie, CabecDoc.MoradaFac, CabecDoc.ModoExp, CabecDoc.ModoPag, " +
                 "CabecDocStatus.Estado ";
 

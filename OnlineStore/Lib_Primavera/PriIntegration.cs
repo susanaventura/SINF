@@ -277,7 +277,7 @@ namespace OnlineStore.Lib_Primavera
                     myEnc.set_DataDoc(order.Date);
                     myEnc.set_Morada(order.DeliveryAddress);
                     myEnc.set_MoradaFac(order.BillingAddress);
-                    myEnc.set_ModoExp("02"); //transportadora
+                    myEnc.set_ModoExp("01"); //transportadora
                     myEnc.set_ModoPag("MB");
                     myEnc.set_CondPag("1");
                     myEnc.set_Observacoes(Util.OBS_ONLINE_STORE);

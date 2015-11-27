@@ -17,7 +17,8 @@ namespace OnlineStore.Lib_Primavera.Model
         public float Discount { get; set; }
         public double Points { get; set; }
         public double IECValue { get; set; }
-        //public float CurrentStock { get; set; }
+        public double IVAValue { get; set; }
+        
 
         public Product() { }
         public Product(StdBELista objArtigo)
@@ -32,6 +33,7 @@ namespace OnlineStore.Lib_Primavera.Model
             this.Unit = objArtigo.Valor("UnidadeBase");
             this.Category = objArtigo.Valor("Familia");
             this.IECValue = objArtigo.Valor("ValorIEC");
+            this.IVAValue = objArtigo.Valor("IVA");
             //if(objArtigo.Valor("STKActual") != null) this.CurrentStock = objArtigo.Valor("STKActual");
 
         }
@@ -67,8 +69,8 @@ namespace OnlineStore.Lib_Primavera.Model
         public static String GetQuery(QueryParams param)
         {
             String query = "";
-            String cols = "Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, Artigo.Familia, Artigo.Desconto, Artigo.ValorIEC, ArtigoMoeda.PVP1, ArtigoMoeda.PVP6, ArtigoMoeda.Moeda";
-            String outcols = "Artigo, Descricao, UnidadeBase, Familia, Desconto, ISNULL(ValorIEC,0) as ValorIEC, PVP1, PVP6, Moeda";
+            String cols = "Artigo.Artigo, Artigo.Descricao, Artigo.UnidadeBase, Artigo.Familia, Artigo.Desconto, Artigo.ValorIEC, Iva.Taxa As Iva, ArtigoMoeda.PVP1, ArtigoMoeda.PVP6, ArtigoMoeda.Moeda";
+            String outcols = "Artigo, Descricao, UnidadeBase, Familia, Desconto, ISNULL(ValorIEC,0) as ValorIEC, Iva, PVP1, PVP6, Moeda";
             if (param.Count) cols = "COUNT(*) AS Count";
 
             if (!param.Count) query = "SELECT " + outcols + " FROM ("; else query = "";
@@ -87,6 +89,7 @@ namespace OnlineStore.Lib_Primavera.Model
                 // Join Tables
                 query += "FROM Artigo ";
                 query += "JOIN ArtigoMoeda ON Artigo.Artigo = ArtigoMoeda.Artigo ";
+                query += "JOIN Iva ON Iva.Iva = Artigo.Iva ";
 
                 // Conditions
                 query += "WHERE (1=1) ";

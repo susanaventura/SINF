@@ -287,7 +287,7 @@ namespace OnlineStore.Lib_Primavera
                     PriEngine.Engine.Comercial.Vendas.PreencheDadosRelacionados(myEnc, rl);
                     foreach (Model.OrderLine lin in lstlindv)
                     {
-                        PriEngine.Engine.Comercial.Vendas.AdicionaLinha(myEnc, lin.CodProduct, lin.Quantity, "", "", lin.UnitPrice, lin.TotalDiscount);
+                        PriEngine.Engine.Comercial.Vendas.AdicionaLinha(myEnc, lin.CodProduct, lin.Quantity, "", "", lin.UnitPrice, lin.DiscountPerc);
                     }
                 }
                 catch (Exception ex)

@@ -145,7 +145,7 @@ namespace OnlineStore.Lib_Primavera
             else return null;
         }
 
-        public static ProductListing ListProducts(int offset = 0, int limit = 1, string codCategory = "", string codStore = "", bool filterOnSale = false, bool filterPoints = false, bool sortDate=false, string searchString = "", bool sortLastSold = false)
+        public static ProductListing ListProducts(int offset = 0, int limit = 1, string codCategory = "", string codStore = "", bool filterOnSale = false, bool filterPoints = false, string searchString = "", Product.QueryParams.SortType sort = 0)
         {
 
             StdBELista objList;
@@ -161,9 +161,8 @@ namespace OnlineStore.Lib_Primavera
                 param.CodStore = codStore;
                 param.FilterOnSale = filterOnSale;
                 param.FilterPoints = filterPoints;
-                param.SortDate = sortDate;
                 param.SearchString = searchString;
-                param.SortLastSold = sortLastSold;
+                param.Sort = sort;
 
                 // Product List
                 objList = PriEngine.Engine.Consulta(Model.Product.GetQuery(param));

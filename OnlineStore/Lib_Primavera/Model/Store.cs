@@ -11,6 +11,7 @@ namespace OnlineStore.Lib_Primavera.Model
         public String id { get; set; }
         public String name { get; set; }
         public String address { get; set; }
+        
 
         public Store() { }
         public Store(StdBELista store)
@@ -18,6 +19,7 @@ namespace OnlineStore.Lib_Primavera.Model
             this.id = store.Valor("Armazem");
             this.name = store.Valor("Descricao");
             this.address = store.Valor("Morada");
+
         }
     }
 }

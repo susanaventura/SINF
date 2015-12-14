@@ -26,8 +26,8 @@ namespace OnlineStore.Lib_Primavera.Model
         public string Status { get; set; }
         public int NumDoc { get; set; }
         public string Serie { get; set; }
-        public String ShippementDate { get; set; }
-        public String ShippementHour { get; set; }
+        public String ShippingDate { get; set; }
+        public String ShippingHour { get; set; }
 
 
         public Order() { }
@@ -103,13 +103,13 @@ namespace OnlineStore.Lib_Primavera.Model
                         {
                             if (orderIsPaid(billing))
                             {
-                                DateTime date = Convert.ToDateTime(billing.ShippementDate);
+                                DateTime date = Convert.ToDateTime(billing.ShippingDate);
                                 //check shipping date
                                 if (DateTime.Compare(date, DateTime.Now) > 0)
                                     r = "Paid. Processing";
                                 else
                                 {
-                                    DateTime time = Convert.ToDateTime(billing.ShippementHour);
+                                    DateTime time = Convert.ToDateTime(billing.ShippingHour);
                                     if (DateTime.Compare(time, DateTime.Now) > 0)
                                         r = "Paid. Processing";
                                     else r = "Shipped";
@@ -143,8 +143,8 @@ namespace OnlineStore.Lib_Primavera.Model
 
             Order b = new Order();
             b.Serie = billing.Valor("Serie"); b.NumDoc = billing.Valor("NumDoc");
-            b.ShippementHour = billing.Valor("HoraCarga");
-            b.ShippementDate = billing.Valor("DataCarga");
+            b.ShippingHour = billing.Valor("HoraCarga");
+            b.ShippingDate = billing.Valor("DataCarga");
             return b;
         }
 

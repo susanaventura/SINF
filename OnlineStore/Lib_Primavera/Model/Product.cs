@@ -49,7 +49,7 @@ namespace OnlineStore.Lib_Primavera.Model
             public bool Count { get; set; }
             public bool SortDate { get; set; }
             public string SearchString { get; set; }
-            public bool SortLastSold { get; set; }
+            public SortType Sort { get; set; }
 
             public QueryParams() {
                 this.Offset = 0;
@@ -60,10 +60,12 @@ namespace OnlineStore.Lib_Primavera.Model
                 this.FilterOnSale = false;
                 this.FilterPoints = false;
                 this.Count = false;
-                this.SortDate = false;
                 this.SearchString = "";
-                this.SortLastSold = false;
+                this.Sort = SortType.NONE;
             }
+
+            public enum SortType {NONE = 0, DATE_NEWEST, DATE_OLDEST, LAST_SOLD, PRICE_LOWEST, PRICE_HIGHEST}
+        
         }
 
         public static String GetQuery(QueryParams param)
@@ -80,9 +82,14 @@ namespace OnlineStore.Lib_Primavera.Model
                 if (!param.Count) {
                     query += ", ROW_NUMBER() OVER (ORDER BY ";
                         // Order
-                        if (param.SortDate) query += "Artigo.DataUltimaActualizacao DESC";
-                        else if (param.SortLastSold) query += "Artigo.DataUltSaida DESC";
-                        else query += "Artigo.Artigo ASC";
+                        switch (param.Sort) {
+                            case QueryParams.SortType.LAST_SOLD: query += "Artigo.DataUltSaida DESC"; break;
+                            case QueryParams.SortType.DATE_NEWEST: query += "Artigo.DataUltimaActualizacao DESC"; break;
+                            case QueryParams.SortType.DATE_OLDEST: query += "Artigo.DataUltimaActualizacao ASC"; break;
+                            case QueryParams.SortType.PRICE_LOWEST: query += "ArtigoMoeda.PVP1 ASC"; break;
+                            case QueryParams.SortType.PRICE_HIGHEST: query += "ArtigoMoeda.PVP1 DESC"; break;
+                            default: query += "Artigo.Artigo ASC"; break;
+                        }
                     query += ") AS RowNum ";
                 }
 

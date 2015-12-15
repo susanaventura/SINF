@@ -107,6 +107,8 @@ namespace OnlineStore.Lib_Primavera.Model
                 if (param.FilterOnSale) query += "AND Artigo.Desconto > 0 ";
                 if (param.SearchString != "") query += "AND Artigo.Descricao LIKE '%" + param.SearchString+"%' ";
 
+                query += "AND ArtigoMoeda.PVP1 > 0.0";
+
    
                 if (!param.Count) query += ") AS MyDerivedTable WHERE MyDerivedTable.RowNum BETWEEN " + (param.Offset + 1) + " AND " + (param.Offset + param.Limit);
 

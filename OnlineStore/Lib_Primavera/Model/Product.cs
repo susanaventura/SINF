@@ -86,8 +86,8 @@ namespace OnlineStore.Lib_Primavera.Model
                             case QueryParams.SortType.LAST_SOLD: query += "Artigo.DataUltSaida DESC"; break;
                             case QueryParams.SortType.DATE_NEWEST: query += "Artigo.DataUltimaActualizacao DESC"; break;
                             case QueryParams.SortType.DATE_OLDEST: query += "Artigo.DataUltimaActualizacao ASC"; break;
-                            case QueryParams.SortType.PRICE_LOWEST: query += "ArtigoMoeda.PVP1 ASC"; break;
-                            case QueryParams.SortType.PRICE_HIGHEST: query += "ArtigoMoeda.PVP1 DESC"; break;
+                            case QueryParams.SortType.PRICE_LOWEST: query += "ArtigoMoeda.PVP1*(100-Artigo.Desconto) ASC"; break;
+                            case QueryParams.SortType.PRICE_HIGHEST: query += "ArtigoMoeda.PVP1*(100-Artigo.Desconto) DESC"; break;
                             default: query += "Artigo.Artigo ASC"; break;
                         }
                     query += ") AS RowNum ";

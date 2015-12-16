@@ -117,16 +117,16 @@ namespace OnlineStore.Lib_Primavera.Model
 
 
                             }
-                            else r = "Wating for payment";
+                            else r = "Waiting for payment";
                         }
                     }
 
                     break;
 
                 case "G":
-                   r = "Wating for payment"; break;
+                   r = "Waiting for payment"; break;
 
-                case "P": r = "Wating for payment"; break;
+                case "P": r = "Waiting for payment"; break;
 
                 default: r = "Invalid"; break;
             }

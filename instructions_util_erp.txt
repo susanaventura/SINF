@@ -1,0 +1,17 @@
+
+** REPOSIÇÃO DE STOCK DE ARTIGOS **
+Inventário > Documentos de stock > selecionar documento 'entrada stock' > inserir os artigos e quantidades nas linhas > Gravar
+
+
+
+** CRIAR ENCOMENDA **
+Vendas/Encomendas > Documento:ECL > escolher Entidade > ecolher artigos > Condições > modo pagamento:MB , cond pagamento: 0, modo expedição > Gravar
+
+** SATISFAZER ENCOMENDA DO CLIENTE DEPOIS DE RECEBIDO O PAGAMENTO **
+1. Gerar fatura:
+	Vendas > Conversão de documentos de venda > escolher a encomenda desejada, com o documento a criar como Factura > Indicar data e hora de carga (nas opções) >gravar
+	Ir a listagem e atualizar a fatura com nº de doc original com a referencia para a encomenda na forma ECL NumDoc/Serie
+	
+2. Registar o recebimento do montante:
+	Tesouraria > Pagamentos e recebimentos > Operaçoes s/ contas correntes > selecionar o cliente > Documento: RE > atualizar > escolher o documento a liquidar (será a fatura criada anteriormente) > Confirmar > Resumo Liquidações > Tesouraria > Doc. Liquidação: indicar o numero da fatura que está a ser liquidada na forma FA Serie/NumDoc > Confirmar
+	

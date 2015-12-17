@@ -99,7 +99,9 @@ namespace OnlineStore.Lib_Primavera.Model
                 query += "JOIN Iva ON Iva.Iva = Artigo.Iva ";
 
                 // Conditions
-                query += "WHERE (1=1) ";
+                query += "WHERE ";
+                query += "ArtigoMoeda.PVP1 > 0.0";
+                query += "AND Artigo.STKActual > 0.0";
                 if (param.CodProduct != "") query += "AND Artigo.Artigo='" + param.CodProduct + "' ";
                 if (param.CodCategory != "") query += "AND Artigo.Familia='" + param.CodCategory + "' ";
                 if (param.CodStore != "") query += "AND Artigo.Artigo IN (SELECT Artigo FROM ArtigoArmazem WHERE Armazem='" + param.CodStore + "') ";
@@ -107,7 +109,7 @@ namespace OnlineStore.Lib_Primavera.Model
                 if (param.FilterOnSale) query += "AND Artigo.Desconto > 0 ";
                 if (param.SearchString != "") query += "AND Artigo.Descricao LIKE '%" + param.SearchString+"%' ";
 
-                query += "AND ArtigoMoeda.PVP1 > 0.0";
+                
 
    
                 if (!param.Count) query += ") AS MyDerivedTable WHERE MyDerivedTable.RowNum BETWEEN " + (param.Offset + 1) + " AND " + (param.Offset + param.Limit);
